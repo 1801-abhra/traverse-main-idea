@@ -51,8 +51,9 @@ function SearchResults() {
                 color: leg.mode === 'bus' ? '#D97706' : leg.mode === 'train' ? '#1A56DB' : '#0EA5E9',
                 bg: leg.mode === 'bus' ? '#FFFBEB' : leg.mode === 'train' ? '#EFF6FF' : '#F0F9FF',
             })),
-            dest: computedRoutes.cheapest?.stopNames?.slice(-1)[0] || 'New Delhi',
-            destSub: 'Railway Station',
+            dest: 'New Delhi',
+            destSub: computedRoutes.cheapest?.stopNames
+                ?.slice(-2, -1)[0] || 'via Delhi ISBT',
         },
         {
             id: 2,
@@ -79,8 +80,9 @@ function SearchResults() {
                 color: leg.mode === 'bus' ? '#D97706' : leg.mode === 'train' ? '#1A56DB' : '#0EA5E9',
                 bg: leg.mode === 'bus' ? '#FFFBEB' : leg.mode === 'train' ? '#EFF6FF' : '#F0F9FF',
             })),
-            dest: computedRoutes.balanced?.stopNames?.slice(-1)[0] || 'New Delhi',
-            destSub: 'Railway Station',
+            dest: 'New Delhi',
+            destSub: computedRoutes.balanced?.stopNames
+                ?.slice(-2, -1)[0] || 'via Delhi ISBT',
         },
         {
             id: 3,
@@ -107,8 +109,9 @@ function SearchResults() {
                 color: leg.mode === 'bus' ? '#D97706' : leg.mode === 'train' ? '#1A56DB' : '#0EA5E9',
                 bg: leg.mode === 'bus' ? '#FFFBEB' : leg.mode === 'train' ? '#EFF6FF' : '#F0F9FF',
             })),
-            dest: computedRoutes.comfort?.stopNames?.slice(-1)[0] || 'New Delhi',
-            destSub: 'Railway Station',
+            dest: 'New Delhi',
+            destSub: computedRoutes.comfort?.stopNames
+                ?.slice(-2, -1)[0] || 'via Delhi ISBT',
         },
         {
             id: 4,
@@ -135,8 +138,9 @@ function SearchResults() {
                 color: leg.mode === 'bus' ? '#D97706' : leg.mode === 'train' ? '#1A56DB' : '#0EA5E9',
                 bg: leg.mode === 'bus' ? '#FFFBEB' : leg.mode === 'train' ? '#EFF6FF' : '#F0F9FF',
             })),
-            dest: computedRoutes.fastest?.stopNames?.slice(-1)[0] || 'New Delhi',
-            destSub: 'Delhi Airport',
+            dest: 'New Delhi',
+            destSub: computedRoutes.fastest?.stopNames
+                ?.slice(-2, -1)[0] || 'via Delhi Airport',
         },
     ]
 
@@ -740,25 +744,34 @@ function SearchResults() {
                                                             color={i === journey.legs.length - 1 ? '#1A56DB' : '#64748B'}
                                                         />
                                                     </div>
-                                                    <span style={{
-                                                        fontSize: '11px',
-                                                        fontWeight: '800', color: '#0F172A',
-                                                        marginTop: '6px',
-                                                        whiteSpace: 'nowrap'
-                                                    }}>
-                                                        {i === journey.legs.length - 1
-                                                            ? journey.dest
-                                                            : journey.legs[i + 1].from}
-                                                    </span>
-                                                    <span style={{
-                                                        fontSize: '10px',
-                                                        color: '#94A3B8',
-                                                        whiteSpace: 'nowrap'
-                                                    }}>
-                                                        {i === journey.legs.length - 1
-                                                            ? journey.destSub
-                                                            : journey.legs[i + 1].fromSub}
-                                                    </span>
+                                                    {i === journey.legs.length - 1 ? (
+                                                        <>
+                                                            <div style={{ fontWeight: '800', color: '#0F172A' }}>
+                                                                {journey.dest}
+                                                            </div>
+                                                            <div style={{ fontSize: '11px', color: '#94A3B8' }}>
+                                                                {journey.destSub}
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <span style={{
+                                                                fontSize: '11px',
+                                                                fontWeight: '800', color: '#0F172A',
+                                                                marginTop: '6px',
+                                                                whiteSpace: 'nowrap'
+                                                            }}>
+                                                                {journey.legs[i + 1].from}
+                                                            </span>
+                                                            <span style={{
+                                                                fontSize: '10px',
+                                                                color: '#94A3B8',
+                                                                whiteSpace: 'nowrap'
+                                                            }}>
+                                                                {journey.legs[i + 1].fromSub}
+                                                            </span>
+                                                        </>
+                                                    )}
                                                 </div>
                                             </div>
                                         ))}
