@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
     MapPin, Calendar, Clock, Edit,
@@ -5,13 +6,18 @@ import {
     Clock3, ArrowRight, SlidersHorizontal,
     CheckCircle
 } from 'lucide-react'
-import { findCandidateRoutes } from '../utils/routingEngine'
+import { 
+  findCandidateRoutesForCorridor,
+  SUPPORTED_CORRIDORS 
+} from '../utils/routingEngine'
 import { runTOPSIS } from '../utils/topsisEngine'
 
 function SearchResults() {
     const navigate = useNavigate()
 
-    const candidates = findCandidateRoutes()
+    const [selectedCorridor, setSelectedCorridor] = useState('juit')
+
+    const candidates = findCandidateRoutesForCorridor(selectedCorridor)
     const computedRoutes = {
         cheapest: runTOPSIS(candidates, 'cheapest')[0],
         balanced: runTOPSIS(candidates, 'balanced')[0],
@@ -259,6 +265,38 @@ function SearchResults() {
                 </div>
             </section>
 
+            <div style={{
+              display: 'flex', alignItems: 'center', 
+              gap: '12px', padding: '12px 24px',
+              backgroundColor: '#F8FAFC',
+              borderBottom: '1px solid #E2E8F0'
+            }}>
+              <span style={{ fontSize: '13px', fontWeight: '700',
+                color: '#64748B' }}>Select Corridor:</span>
+              {SUPPORTED_CORRIDORS.map(corridor => (
+                <button
+                  key={corridor.id}
+                  onClick={() => setSelectedCorridor(corridor.from)}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '999px',
+                    border: selectedCorridor === corridor.from
+                      ? '2px solid #1A56DB'
+                      : '1.5px solid #E2E8F0',
+                    backgroundColor: selectedCorridor === corridor.from
+                      ? '#EFF6FF' : '#fff',
+                    color: selectedCorridor === corridor.from
+                      ? '#1A56DB' : '#64748B',
+                    fontSize: '13px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {corridor.label} · {corridor.distance}
+                </button>
+              ))}
+            </div>
+
             {/* MAIN CONTENT */}
             <div style={{
                 maxWidth: '1200px', margin: '0 auto',
@@ -497,7 +535,10 @@ function SearchResults() {
                                 fontSize: '22px', fontWeight: '800',
                                 color: '#0F172A', margin: '0 0 4px'
                             }}>
-                                4 journeys found for JUIT → Delhi
+                                {`${candidates.length > 0 ? 4 : 0} journeys found for ${
+                                  SUPPORTED_CORRIDORS.find(c => c.from === selectedCorridor)?.label 
+                                  || 'JUIT → Delhi'
+                                }`}
                             </h1>
                             <div style={{
                                 display: 'flex', alignItems: 'center',

@@ -74,6 +74,23 @@ export const RELIABILITY = {
 // intermediate stops like Kandaghat, Shoghi, Dharampur etc.
 // ------------------------------------------------------------
 export const NODES = {
+    // SHIMLA CORRIDOR NODES
+    shimla_isbt: {
+        id: 'shimla_isbt', name: 'Shimla ISBT Tutikandi',
+        shortName: 'Shimla ISBT', tier: 1,
+        lat: 31.1048, lon: 77.1734
+    },
+    shimla_railway: {
+        id: 'shimla_railway', name: 'Shimla Railway Station',
+        shortName: 'Shimla Rly', tier: 2,
+        lat: 31.1040, lon: 77.1670
+    },
+    parwanoo: {
+        id: 'parwanoo', name: 'Parwanoo Bus Stand',
+        shortName: 'Parwanoo', tier: 2,
+        lat: 30.8389, lon: 76.9600
+    },
+    // JUIT CORRIDOR NODES
     juit: {
         id: 'juit', name: 'JUIT Campus',
         shortName: 'JUIT', tier: 1,
@@ -490,6 +507,259 @@ export const EDGES = [
         transfers: 1,
         dataSource: 'Formula: city cab ~5km'
     },
+    // ----------------------------------------------------------
+    // SHIMLA CORRIDOR EDGES
+    // Source: Real HRTC scrape — 23 services verified
+    // ----------------------------------------------------------
+
+    // SHIMLA ISBT → DELHI ISBT (DIRECT BUS — all types)
+    // All data from real HRTC scrape
+    {
+        id: 's1a',
+        from: 'shimla_isbt', to: 'delhi_isbt',
+        mode: 'bus', operator: 'HRTC Ordinary',
+        serviceNo: '556',
+        departs: '05:45', arrives: '20:10',
+        cost: 400,
+        time: 625,
+        comfort: 4.5,
+        reliability: RELIABILITY.ORDINARY,
+        transfers: 0,
+        dataSource: 'HRTC Scrape: Service 556 Ordinary Shimla→Delhi'
+    },
+    {
+        id: 's1b',
+        from: 'shimla_isbt', to: 'delhi_isbt',
+        mode: 'bus', operator: 'HRTC Ordinary',
+        serviceNo: '518',
+        departs: '07:15', arrives: '21:58',
+        cost: 400,
+        time: 643,
+        comfort: 4.5,
+        reliability: RELIABILITY.ORDINARY,
+        transfers: 0,
+        dataSource: 'HRTC Scrape: Service 518 Ordinary Shimla→Delhi'
+    },
+    {
+        id: 's1c',
+        from: 'shimla_isbt', to: 'delhi_isbt',
+        mode: 'bus', operator: 'HRTC Ordinary',
+        serviceNo: '538',
+        departs: '05:30', arrives: '18:31',
+        cost: 400,
+        time: 541,
+        comfort: 4.5,
+        reliability: RELIABILITY.ORDINARY,
+        transfers: 0,
+        dataSource: 'HRTC Scrape: Service 538 Ordinary Shimla→Delhi'
+    },
+    {
+        id: 's1d',
+        from: 'shimla_isbt', to: 'delhi_isbt',
+        mode: 'bus', operator: 'HRTC Himsuta Volvo AC',
+        serviceNo: '93',
+        departs: '04:50', arrives: '19:35',
+        cost: 1200,
+        time: 525,
+        comfort: 7.8,
+        reliability: RELIABILITY.VOLVO_AC,
+        transfers: 0,
+        dataSource: 'HRTC Scrape: Service 93 Volvo Shimla→Delhi'
+    },
+    {
+        id: 's1e',
+        from: 'shimla_isbt', to: 'delhi_isbt',
+        mode: 'bus', operator: 'HRTC Himsuta Volvo AC',
+        serviceNo: '7',
+        departs: '19:00', arrives: '08:25',
+        cost: 1200,
+        time: 505,
+        comfort: 7.8,
+        reliability: RELIABILITY.VOLVO_AC,
+        transfers: 0,
+        dataSource: 'HRTC Scrape: Service 7 Volvo Shimla→Delhi'
+    },
+    {
+        id: 's1f',
+        from: 'shimla_isbt', to: 'delhi_isbt',
+        mode: 'bus', operator: 'HRTC Himsuta Volvo AC',
+        serviceNo: '36',
+        departs: '08:30', arrives: '22:30',
+        cost: 1200,
+        time: 540,
+        comfort: 7.8,
+        reliability: RELIABILITY.VOLVO_AC,
+        transfers: 0,
+        dataSource: 'HRTC Scrape: Service 36 Volvo Shimla→Delhi'
+    },
+    {
+        id: 's1g',
+        from: 'shimla_isbt', to: 'delhi_isbt',
+        mode: 'bus', operator: 'HRTC AC Deluxe',
+        serviceNo: '46',
+        departs: '06:44', arrives: '20:24',
+        cost: 900,
+        time: 520,
+        comfort: 6.5,
+        reliability: RELIABILITY.AC_DELUXE,
+        transfers: 0,
+        dataSource: 'HRTC Scrape: Service 46 AC Deluxe Shimla→Delhi'
+    },
+    {
+        id: 's1h',
+        from: 'shimla_isbt', to: 'delhi_isbt',
+        mode: 'bus', operator: 'HRTC AC Deluxe',
+        serviceNo: '176',
+        departs: '06:00', arrives: '21:30',
+        cost: 900,
+        time: 510,
+        comfort: 6.5,
+        reliability: RELIABILITY.AC_DELUXE,
+        transfers: 0,
+        dataSource: 'HRTC Scrape: Service 176 AC Deluxe Shimla→Delhi'
+    },
+
+    // SHIMLA ISBT → CHANDIGARH ISBT
+    // Via Solan (hub connection)
+    {
+        id: 's2a',
+        from: 'shimla_isbt', to: 'chandigarh_isbt',
+        mode: 'bus', operator: 'HRTC Ordinary',
+        serviceNo: 'SHL-CHD-ORD',
+        departs: 'Multiple', arrives: 'Multiple',
+        cost: 148,
+        time: 180,
+        comfort: 4.5,
+        reliability: RELIABILITY.ORDINARY,
+        transfers: 1,
+        dataSource: 'HRTC Shimla-Chandigarh Ordinary service'
+    },
+    {
+        id: 's2b',
+        from: 'shimla_isbt', to: 'chandigarh_isbt',
+        mode: 'bus', operator: 'HRTC Volvo AC',
+        serviceNo: 'SHL-CHD-VOL',
+        departs: 'Multiple', arrives: 'Multiple',
+        cost: 450,
+        time: 165,
+        comfort: 7.8,
+        reliability: RELIABILITY.VOLVO_AC,
+        transfers: 1,
+        dataSource: 'HRTC Shimla-Chandigarh Volvo service'
+    },
+
+    // SHIMLA → SOLAN (intermediate)
+    {
+        id: 's3a',
+        from: 'shimla_isbt', to: 'solan',
+        mode: 'bus', operator: 'HRTC Ordinary Local',
+        serviceNo: 'SHL-SOL-ORD',
+        departs: 'Multiple', arrives: 'Multiple',
+        cost: 62,
+        time: 75,
+        comfort: 4.0,
+        reliability: RELIABILITY.ORDINARY,
+        transfers: 1,
+        dataSource: 'HRTC Shimla-Solan ordinary ~35km'
+    },
+
+    // SHIMLA → CHANDIGARH RAILWAY
+    {
+        id: 's4a',
+        from: 'shimla_isbt', to: 'chandigarh_railway',
+        mode: 'bus', operator: 'HRTC Express',
+        serviceNo: 'SHL-CDG-EXP',
+        departs: 'Multiple', arrives: 'Multiple',
+        cost: 200,
+        time: 200,
+        comfort: 4.5,
+        reliability: RELIABILITY.ORDINARY,
+        transfers: 1,
+        dataSource: 'HRTC Shimla-Chandigarh Railway express'
+    },
+
+    // SHIMLA → CHANDIGARH AIRPORT (for flight option)
+    {
+        id: 's5a',
+        from: 'shimla_isbt', to: 'chandigarh_airport',
+        mode: 'cab', operator: 'Intercity Sedan',
+        serviceNo: null,
+        departs: 'On demand', arrives: 'On demand',
+        cost: Math.round(cabCost(
+            haversineKm(31.1048, 77.1734, 30.6735, 76.7885),
+            'sedan'
+        )),
+        time: 210,
+        comfort: 8.0,
+        reliability: RELIABILITY.cab,
+        transfers: 1,
+        dataSource: 'Formula: Shimla→Chandigarh Airport ~92km sedan'
+    },
+
+    // CAB: SHIMLA → DELHI (direct intercity)
+    {
+        id: 's6a',
+        from: 'shimla_isbt', to: 'delhi_cp',
+        mode: 'cab', operator: 'Intercity Cab (Savaari/Ola)',
+        serviceNo: null,
+        departs: 'On demand', arrives: 'On demand',
+        cost: Math.round(cabCost(
+            haversineKm(31.1048, 77.1734, 28.6315, 77.2167),
+            'sedan'
+        )),
+        time: 480,
+        comfort: 8.0,
+        reliability: RELIABILITY.cab,
+        transfers: 0,
+        dataSource: 'Formula: Shimla→Delhi ~348km intercity sedan'
+    },
+
+    // SHIMLA → KALKA (for Kalka-Shimla toy train connection)
+    {
+        id: 's7a',
+        from: 'shimla_isbt', to: 'kalka',
+        mode: 'bus', operator: 'HRTC Ordinary to Kalka',
+        serviceNo: 'SHL-KLK-ORD',
+        departs: 'Multiple', arrives: 'Multiple',
+        cost: 82,
+        time: 100,
+        comfort: 4.0,
+        reliability: RELIABILITY.ORDINARY,
+        transfers: 1,
+        dataSource: 'HRTC Shimla-Kalka ~47km ordinary'
+    },
+
+    // KALKA → CHANDIGARH ISBT (onward connection)
+    {
+        id: 's8a',
+        from: 'kalka', to: 'chandigarh_isbt',
+        mode: 'bus', operator: 'HRTC Ordinary Kalka-Chandigarh',
+        serviceNo: 'KLK-CHD-ORD',
+        departs: 'Multiple', arrives: 'Multiple',
+        cost: 45,
+        time: 50,
+        comfort: 4.0,
+        reliability: RELIABILITY.ORDINARY,
+        transfers: 1,
+        dataSource: 'HRTC Kalka-Chandigarh ~28km ordinary'
+    },
+    {
+        id: 's8b',
+        from: 'kalka', to: 'chandigarh_railway',
+        mode: 'cab', operator: 'Kalka to Chandigarh Cab',
+        serviceNo: null,
+        departs: 'On demand', arrives: 'On demand',
+        cost: Math.round(cabCost(
+            haversineKm(30.8333, 76.9358, 30.7097, 76.7719),
+            'sedan'
+        )),
+        time: 45,
+        comfort: 7.5,
+        reliability: RELIABILITY.cab,
+        transfers: 1,
+        dataSource: 'Formula: Kalka→Chandigarh Railway ~20km'
+    },
+
     {
         id: 'e13a',
         from: 'igi', to: 'delhi_cp',
@@ -527,27 +797,47 @@ const ADJACENCY = buildAdjacency()
 // This enforces max 4-5 stops, solves stop proliferation
 // Journeys > 100km → only hub nodes used
 // ------------------------------------------------------------
-const ROUTE_TEMPLATES = [
-    // Direct bus routes (Waknaghat → Delhi ISBT direct)
+// JUIT → DELHI templates
+const JUIT_DELHI_TEMPLATES = [
     ['juit', 'waknaghat', 'delhi_isbt', 'delhi_cp'],
-
-    // Bus via Solan + Chandigarh
     ['juit', 'waknaghat', 'solan', 'chandigarh_isbt', 'delhi_isbt', 'delhi_cp'],
-
-    // Bus to Chandigarh + Train to Delhi
     ['juit', 'waknaghat', 'solan', 'chandigarh_isbt',
         'chandigarh_railway', 'ndls', 'delhi_cp'],
-
-    // Direct cab to Chandigarh Railway + Train
     ['juit', 'chandigarh_railway', 'ndls', 'delhi_cp'],
-
-    // Flight route
     ['juit', 'chandigarh_airport', 'igi', 'delhi_cp'],
-
-    // Bus to Chandigarh then Train
     ['juit', 'waknaghat', 'chandigarh_isbt',
         'chandigarh_railway', 'ndls', 'delhi_cp'],
 ]
+
+// SHIMLA → DELHI templates
+const SHIMLA_DELHI_TEMPLATES = [
+    // Direct bus Shimla → Delhi ISBT
+    ['shimla_isbt', 'delhi_isbt', 'delhi_cp'],
+    // Bus via Chandigarh ISBT
+    ['shimla_isbt', 'chandigarh_isbt', 'delhi_isbt', 'delhi_cp'],
+    // Bus to Chandigarh + Train
+    ['shimla_isbt', 'chandigarh_isbt',
+        'chandigarh_railway', 'ndls', 'delhi_cp'],
+    // Via Solan + Chandigarh + Train
+    ['shimla_isbt', 'solan', 'chandigarh_isbt',
+        'chandigarh_railway', 'ndls', 'delhi_cp'],
+    // Flight via Chandigarh Airport
+    ['shimla_isbt', 'chandigarh_airport', 'igi', 'delhi_cp'],
+    // Via Kalka then train
+    ['shimla_isbt', 'kalka', 'chandigarh_railway',
+        'ndls', 'delhi_cp'],
+    // Direct intercity cab
+    ['shimla_isbt', 'delhi_cp'],
+]
+
+// Combined — detect corridor from origin node
+const ROUTE_TEMPLATES_BY_CORRIDOR = {
+    juit: JUIT_DELHI_TEMPLATES,
+    shimla_isbt: SHIMLA_DELHI_TEMPLATES,
+}
+
+// Default for findCandidateRoutes (JUIT → Delhi)
+const ROUTE_TEMPLATES = JUIT_DELHI_TEMPLATES
 
 // ------------------------------------------------------------
 // 9. CARTESIAN PRODUCT HELPER
@@ -628,7 +918,94 @@ export function findCandidateRoutes() {
 }
 
 // ------------------------------------------------------------
-// 11. GET ALL ALTERNATIVES FOR A SPECIFIC LEG
+// 11. CORRIDOR-AWARE SEARCH
+// Detects which corridor to use based on origin node
+// Supports: juit→delhi, shimla→delhi (more coming)
+// ------------------------------------------------------------
+export function findCandidateRoutesForCorridor(fromNode = 'juit') {
+    const templates = ROUTE_TEMPLATES_BY_CORRIDOR[fromNode]
+        || JUIT_DELHI_TEMPLATES
+
+    const candidates = []
+
+    templates.forEach((template, templateIdx) => {
+        const edgeOptions = []
+        let validTemplate = true
+
+        for (let i = 0; i < template.length - 1; i++) {
+            const from = template[i]
+            const to = template[i + 1]
+            const connecting = ADJACENCY[from]
+                ? ADJACENCY[from].filter(e => e.to === to)
+                : []
+
+            if (connecting.length === 0) {
+                validTemplate = false
+                break
+            }
+            edgeOptions.push(connecting)
+        }
+
+        if (!validTemplate) return
+
+        const combinations = cartesian(edgeOptions)
+
+        combinations.forEach((combo, comboIdx) => {
+            const totalCost = combo.reduce((s, e) => s + e.cost, 0)
+            const totalTime = combo.reduce((s, e) => s + e.time, 0)
+            const avgComfort = combo.reduce((s, e) => s + e.comfort, 0) / combo.length
+            const avgReliability = combo.reduce((s, e) => s + e.reliability, 0) / combo.length
+            const transfers = combo.filter(e => e.transfers > 0).length
+            const modes = [...new Set(combo.map(e => e.mode))]
+            const operators = combo.map(e => e.operator).join(' + ')
+
+            candidates.push({
+                id: fromNode + '_route_' + templateIdx + '_' + comboIdx,
+                template: templateIdx,
+                stops: template,
+                legs: combo,
+                modes,
+                operators,
+                totalCost: Math.round(totalCost),
+                totalTime,
+                avgComfort: Math.round(avgComfort * 10) / 10,
+                avgReliability: Math.round(avgReliability * 1000) / 1000,
+                transfers,
+                fromName: NODES[template[0]]?.name || template[0],
+                toName: NODES[template[template.length - 1]]?.name || template[template.length - 1],
+                stopNames: template.map(id => NODES[id]?.shortName || id),
+                corridor: fromNode + '_delhi',
+            })
+        })
+    })
+
+    return candidates
+}
+
+// Supported corridors for UI dropdown
+export const SUPPORTED_CORRIDORS = [
+    {
+        id: 'juit_delhi',
+        from: 'juit',
+        fromName: 'JUIT Waknaghat',
+        to: 'delhi_cp',
+        toName: 'New Delhi',
+        label: 'JUIT Waknaghat → New Delhi',
+        distance: '~310 km',
+    },
+    {
+        id: 'shimla_delhi',
+        from: 'shimla_isbt',
+        fromName: 'Shimla',
+        to: 'delhi_cp',
+        toName: 'New Delhi',
+        label: 'Shimla → New Delhi',
+        distance: '~348 km',
+    },
+]
+
+// ------------------------------------------------------------
+// 12. GET ALL ALTERNATIVES FOR A SPECIFIC LEG
 // Returns all edges between two nodes as switchable options
 // Used by JourneyBuilder to show real alternatives per leg
 // ------------------------------------------------------------
