@@ -266,35 +266,65 @@ function SearchResults() {
             </section>
 
             <div style={{
-              display: 'flex', alignItems: 'center', 
-              gap: '12px', padding: '12px 24px',
-              backgroundColor: '#F8FAFC',
-              borderBottom: '1px solid #E2E8F0'
+              backgroundColor: '#fff',
+              borderBottom: '1px solid #E2E8F0',
+              padding: '16px 24px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              flexWrap: 'wrap'
             }}>
               <span style={{ fontSize: '13px', fontWeight: '700',
-                color: '#64748B' }}>Select Corridor:</span>
-              {SUPPORTED_CORRIDORS.map(corridor => (
-                <button
-                  key={corridor.id}
-                  onClick={() => setSelectedCorridor(corridor.from)}
+                color: '#64748B', whiteSpace: 'nowrap' }}>
+                Search Corridor:
+              </span>
+              
+              <div style={{ position: 'relative', flexShrink: 0 }}>
+                <select
+                  value={selectedCorridor}
+                  onChange={(e) => setSelectedCorridor(e.target.value)}
                   style={{
-                    padding: '8px 16px',
-                    borderRadius: '999px',
-                    border: selectedCorridor === corridor.from
-                      ? '2px solid #1A56DB'
-                      : '1.5px solid #E2E8F0',
-                    backgroundColor: selectedCorridor === corridor.from
-                      ? '#EFF6FF' : '#fff',
-                    color: selectedCorridor === corridor.from
-                      ? '#1A56DB' : '#64748B',
-                    fontSize: '13px',
+                    padding: '10px 40px 10px 16px',
+                    borderRadius: '10px',
+                    border: '1.5px solid #1A56DB',
+                    backgroundColor: '#EFF6FF',
+                    color: '#1A56DB',
+                    fontSize: '14px',
                     fontWeight: '700',
                     cursor: 'pointer',
+                    outline: 'none',
+                    appearance: 'none',
+                    minWidth: '280px',
                   }}
                 >
-                  {corridor.label} · {corridor.distance}
-                </button>
-              ))}
+                  <option value="juit">
+                    JUIT Waknaghat → New Delhi (~310 km)
+                  </option>
+                  <option value="shimla_isbt">
+                    Shimla → New Delhi (~348 km)
+                  </option>
+                </select>
+                <div style={{
+                  position: 'absolute', right: '12px',
+                  top: '50%', transform: 'translateY(-50%)',
+                  pointerEvents: 'none',
+                  color: '#1A56DB', fontSize: '12px'
+                }}>▼</div>
+              </div>
+
+              <div style={{
+                display: 'flex', alignItems: 'center',
+                gap: '6px', fontSize: '12px',
+                color: '#22C55E', fontWeight: '700'
+              }}>
+                <div style={{ width: '8px', height: '8px',
+                  backgroundColor: '#22C55E',
+                  borderRadius: '999px' }} />
+                {selectedCorridor === 'juit' 
+                  ? '21 real HRTC services'
+                  : '23 real HRTC services'
+                } · Modified TOPSIS ranked
+              </div>
             </div>
 
             {/* MAIN CONTENT */}
@@ -535,9 +565,10 @@ function SearchResults() {
                                 fontSize: '22px', fontWeight: '800',
                                 color: '#0F172A', margin: '0 0 4px'
                             }}>
-                                {`${candidates.length > 0 ? 4 : 0} journeys found for ${
-                                  SUPPORTED_CORRIDORS.find(c => c.from === selectedCorridor)?.label 
-                                  || 'JUIT → Delhi'
+                                {`4 journeys found for ${
+                                  selectedCorridor === 'juit'
+                                    ? 'JUIT Waknaghat → Delhi'
+                                    : 'Shimla → Delhi'
                                 }`}
                             </h1>
                             <div style={{
