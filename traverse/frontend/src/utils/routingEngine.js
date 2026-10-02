@@ -714,6 +714,37 @@ export const EDGES = [
         dataSource: 'Formula: Shimla→Delhi ~348km intercity sedan'
     },
 
+    // SHIMLA → CHANDIGARH RAILWAY (direct for train connection)
+    {
+        id: 's9a',
+        from: 'shimla_isbt', to: 'chandigarh_railway',
+        mode: 'bus', operator: 'HRTC Express to Railway',
+        serviceNo: 'SHL-CDG-RLY',
+        departs: 'Multiple', arrives: 'Multiple',
+        cost: 200,
+        time: 195,
+        comfort: 4.5,
+        reliability: RELIABILITY.ORDINARY,
+        transfers: 1,
+        dataSource: 'HRTC Shimla-Chandigarh Railway ~110km'
+    },
+    {
+        id: 's9b',
+        from: 'shimla_isbt', to: 'chandigarh_railway',
+        mode: 'cab', operator: 'Intercity Cab Shimla-Chandigarh',
+        serviceNo: null,
+        departs: 'On demand', arrives: 'On demand',
+        cost: Math.round(cabCost(
+            haversineKm(31.1048, 77.1734, 30.7097, 76.7719),
+            'sedan'
+        )),
+        time: 185,
+        comfort: 8.0,
+        reliability: RELIABILITY.cab,
+        transfers: 1,
+        dataSource: 'Formula: Shimla→Chandigarh Railway ~105km sedan'
+    },
+
     // SHIMLA → KALKA (for Kalka-Shimla toy train connection)
     {
         id: 's7a',
@@ -799,31 +830,31 @@ const ADJACENCY = buildAdjacency()
 // ------------------------------------------------------------
 // JUIT → DELHI templates
 const JUIT_DELHI_TEMPLATES = [
+    // Direct bus (Waknaghat → Delhi ISBT)
     ['juit', 'waknaghat', 'delhi_isbt', 'delhi_cp'],
-    ['juit', 'waknaghat', 'solan', 'chandigarh_isbt', 'delhi_isbt', 'delhi_cp'],
-    ['juit', 'waknaghat', 'solan', 'chandigarh_isbt',
-        'chandigarh_railway', 'ndls', 'delhi_cp'],
+    // Direct cab to Chandigarh Railway + Train (CLEAN 3 stops)
     ['juit', 'chandigarh_railway', 'ndls', 'delhi_cp'],
+    // Flight route
     ['juit', 'chandigarh_airport', 'igi', 'delhi_cp'],
+    // Bus + Train (via Chandigarh ISBT → Railway)
     ['juit', 'waknaghat', 'chandigarh_isbt',
         'chandigarh_railway', 'ndls', 'delhi_cp'],
+    // Bus via Solan then Chandigarh
+    ['juit', 'waknaghat', 'solan',
+        'chandigarh_isbt', 'delhi_isbt', 'delhi_cp'],
 ]
 
 // SHIMLA → DELHI templates
 const SHIMLA_DELHI_TEMPLATES = [
     // Direct bus Shimla → Delhi ISBT
     ['shimla_isbt', 'delhi_isbt', 'delhi_cp'],
-    // Bus via Chandigarh ISBT
+    // Bus to Chandigarh ISBT + Train (CLEAN)
+    ['shimla_isbt', 'chandigarh_railway', 'ndls', 'delhi_cp'],
+    // Bus via Chandigarh ISBT then Delhi
     ['shimla_isbt', 'chandigarh_isbt', 'delhi_isbt', 'delhi_cp'],
-    // Bus to Chandigarh + Train
-    ['shimla_isbt', 'chandigarh_isbt',
-        'chandigarh_railway', 'ndls', 'delhi_cp'],
-    // Via Solan + Chandigarh + Train
-    ['shimla_isbt', 'solan', 'chandigarh_isbt',
-        'chandigarh_railway', 'ndls', 'delhi_cp'],
     // Flight via Chandigarh Airport
     ['shimla_isbt', 'chandigarh_airport', 'igi', 'delhi_cp'],
-    // Via Kalka then train
+    // Via Kalka then Chandigarh Railway then train
     ['shimla_isbt', 'kalka', 'chandigarh_railway',
         'ndls', 'delhi_cp'],
     // Direct intercity cab
@@ -887,8 +918,14 @@ export function findCandidateRoutes() {
             const totalTime = combo.reduce((s, e) => s + e.time, 0)
             const avgComfort = combo.reduce((s, e) => s + e.comfort, 0) / combo.length
             const avgReliability = combo.reduce((s, e) => s + e.reliability, 0) / combo.length
-            // Transfers = number of mode changes
-            const transfers = combo.filter(e => e.transfers > 0).length
+            // Transfers = number of actual mode changes
+            // Count when mode changes between consecutive legs
+            let transfers = 0
+            for (let t = 1; t < combo.length; t++) {
+                if (combo[t].mode !== combo[t - 1].mode) transfers++
+            }
+            // Minimum 1 transfer if more than 1 leg
+            if (combo.length > 1 && transfers === 0) transfers = 1
 
             // Get the modes used
             const modes = [...new Set(combo.map(e => e.mode))]
@@ -955,7 +992,11 @@ export function findCandidateRoutesForCorridor(fromNode = 'juit') {
             const totalTime = combo.reduce((s, e) => s + e.time, 0)
             const avgComfort = combo.reduce((s, e) => s + e.comfort, 0) / combo.length
             const avgReliability = combo.reduce((s, e) => s + e.reliability, 0) / combo.length
-            const transfers = combo.filter(e => e.transfers > 0).length
+            let transfers = 0
+            for (let t = 1; t < combo.length; t++) {
+                if (combo[t].mode !== combo[t - 1].mode) transfers++
+            }
+            if (combo.length > 1 && transfers === 0) transfers = 1
             const modes = [...new Set(combo.map(e => e.mode))]
             const operators = combo.map(e => e.operator).join(' + ')
 

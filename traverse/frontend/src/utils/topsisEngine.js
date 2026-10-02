@@ -24,33 +24,91 @@ export const CRITERIA = {
 
 // ------------------------------------------------------------
 // PERSONA WEIGHT ADJUSTMENT FACTORS
-// Applied ON TOP of entropy weights
-// Cheapest: boost cost weight
-// Fastest: boost time weight
-// Comfort: boost comfort + reliability weights
-// Balanced: keep entropy weights pure
+// Applied ON TOP of entropy weights — works for ANY corridor
+//
+// Design principle:
+// Each persona focuses on ONE primary criterion (high boost)
+// and moderately values others — never ignores any criterion
+// This ensures diverse route types (bus/train/flight/cab)
+// appear across personas rather than one type dominating
+//
+// Transfer weight kept low because modern multi-modal travel
+// accepts 1-2 transfers as normal — heavy penalty causes
+// direct but slow/expensive routes to always win
 // ------------------------------------------------------------
 export const PERSONA_BOOST = {
-    cheapest: { cost: 2.5, time: 0.8, comfort: 0.5, reliability: 0.6, transfers: 0.8 },
-    fastest: { cost: 0.1, time: 8.0, comfort: 0.3, reliability: 0.5, transfers: 0.5 },
-    comfort: { cost: 0.4, time: 0.6, comfort: 2.5, reliability: 2.0, transfers: 0.8 },
-    balanced: { cost: 1.0, time: 1.0, comfort: 1.0, reliability: 1.0, transfers: 1.0 },
+    cheapest: {
+        cost: 3.0,        // strongly prefer cheap
+        time: 0.6,        // time matters less
+        comfort: 0.4,     // comfort matters less
+        reliability: 0.5, // reliability moderate
+        transfers: 0.3,   // transfers barely matter
+    },
+    fastest: {
+        cost: 0.1,        // cost irrelevant
+        time: 8.0,        // time is everything
+        comfort: 0.3,     // comfort barely matters
+        reliability: 0.6, // reliability moderate
+        transfers: 0.3,   // transfers barely matter
+    },
+    comfort: {
+        cost: 0.3,        // cost less important
+        time: 0.5,        // time moderate
+        comfort: 4.0,     // comfort is everything
+        reliability: 2.5, // reliability very important
+        transfers: 0.4,   // transfers moderate
+    },
+    balanced: {
+        cost: 1.2,        // slightly above equal
+        time: 1.2,        // slightly above equal
+        comfort: 1.0,     // equal
+        reliability: 1.0, // equal
+        transfers: 0.4,   // transfers less important
+        // so diverse routes appear
+    },
+}
+
+// ------------------------------------------------------------
+// COMFORT SCORE ENHANCEMENT
+// Trains and flights have inherently higher comfort than buses
+// This function adjusts raw comfort scores to reflect reality
+// Works for any corridor automatically
+// ------------------------------------------------------------
+function enhancedComfort(route) {
+    const modes = route.modes || []
+    let comfort = route.avgComfort || 5.0
+
+    // Train bonus — trains have reserved seats, stable ride
+    if (modes.includes('train')) {
+        comfort = Math.min(10, comfort + 1.5)
+    }
+    // Flight bonus — fastest, most comfortable
+    if (modes.includes('flight')) {
+        comfort = Math.min(10, comfort + 2.0)
+    }
+    // Walk penalty — less comfortable for long journeys
+    if (modes.includes('walk') && route.totalTime > 300) {
+        comfort = Math.max(1, comfort - 0.5)
+    }
+    return comfort
 }
 
 // ------------------------------------------------------------
 // STEP 1: BUILD DECISION MATRIX
 // Extracts 5 criteria values from each candidate route
+// Uses enhanced comfort scoring for fair comparison
+// Works automatically for any corridor
 // ------------------------------------------------------------
 export function buildDecisionMatrix(routes) {
     return routes.map(r => ({
         id: r.id,
         route: r,
         values: [
-            r.totalCost,        // C1: cost (minimize)
-            r.totalTime,        // C2: time (minimize)
-            r.avgComfort,       // C3: comfort (maximize)
-            r.avgReliability,   // C4: reliability (maximize)
-            r.transfers,        // C5: transfers (minimize)
+            r.totalCost,              // C1: cost (minimize)
+            r.totalTime,              // C2: time (minimize)
+            enhancedComfort(r),       // C3: comfort enhanced (maximize)
+            r.avgReliability,         // C4: reliability (maximize)
+            r.transfers,              // C5: transfers (minimize)
         ]
     }))
 }
