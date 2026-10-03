@@ -37,7 +37,7 @@ function SearchResults() {
             tagBg: '#EFF6FF',
             total: '₹' + (computedRoutes.balanced?.totalCost || 1700),
             duration: Math.floor((computedRoutes.balanced?.totalTime || 510) / 60) + 'h ' + ((computedRoutes.balanced?.totalTime || 510) % 60) + 'm',
-            transfers: (computedRoutes.balanced?.transfers || 3) + ' transfers',
+            transfers: (computedRoutes.balanced?.transfers ?? 1) + ' transfers',
             topsisScore: computedRoutes.balanced?.ccFinal || 0,
             routeStops: computedRoutes.balanced?.stopNames || [],
             rawLegs: computedRoutes.balanced?.legs || [],
@@ -52,9 +52,12 @@ function SearchResults() {
                 color: leg.mode === 'bus' ? '#D97706' : leg.mode === 'train' ? '#1A56DB' : '#0EA5E9',
                 bg: leg.mode === 'bus' ? '#FFFBEB' : leg.mode === 'train' ? '#EFF6FF' : '#F0F9FF',
             })),
-            dest: 'New Delhi',
-            destSub: computedRoutes.balanced?.stopNames
-                ?.slice(-2, -1)[0] || 'via Delhi ISBT',
+            dest: computedRoutes.balanced?.stopNames?.slice(-1)[0]
+                || (selectedCorridor === 'juit_rampur' ? 'Rampur Bushahr' : 'New Delhi'),
+            destSub: computedRoutes.balanced?.stopNames?.slice(-2, -1)[0] ===
+                computedRoutes.balanced?.stopNames?.slice(-1)[0]
+                ? ''
+                : computedRoutes.balanced?.stopNames?.slice(-2, -1)[0] || '',
         },
         {
             id: 2,
@@ -66,7 +69,7 @@ function SearchResults() {
             tagBg: '#ECFDF5',
             total: '₹' + (computedRoutes.cheapest?.totalCost || 1300),
             duration: Math.floor((computedRoutes.cheapest?.totalTime || 510) / 60) + 'h ' + ((computedRoutes.cheapest?.totalTime || 510) % 60) + 'm',
-            transfers: (computedRoutes.cheapest?.transfers || 3) + ' transfers',
+            transfers: (computedRoutes.cheapest?.transfers ?? 1) + ' transfers',
             topsisScore: computedRoutes.cheapest?.ccFinal || 0,
             routeStops: computedRoutes.cheapest?.stopNames || [],
             rawLegs: computedRoutes.cheapest?.legs || [],
@@ -81,9 +84,12 @@ function SearchResults() {
                 color: leg.mode === 'bus' ? '#D97706' : leg.mode === 'train' ? '#1A56DB' : '#0EA5E9',
                 bg: leg.mode === 'bus' ? '#FFFBEB' : leg.mode === 'train' ? '#EFF6FF' : '#F0F9FF',
             })),
-            dest: 'New Delhi',
-            destSub: computedRoutes.cheapest?.stopNames
-                ?.slice(-2, -1)[0] || 'via Delhi ISBT',
+            dest: computedRoutes.cheapest?.stopNames?.slice(-1)[0]
+                || (selectedCorridor === 'juit_rampur' ? 'Rampur Bushahr' : 'New Delhi'),
+            destSub: computedRoutes.cheapest?.stopNames?.slice(-2, -1)[0] ===
+                computedRoutes.cheapest?.stopNames?.slice(-1)[0]
+                ? ''
+                : computedRoutes.cheapest?.stopNames?.slice(-2, -1)[0] || '',
         },
         {
             id: 3,
@@ -95,7 +101,7 @@ function SearchResults() {
             tagBg: '#F5F3FF',
             total: '₹' + (computedRoutes.comfort?.totalCost || 4500),
             duration: Math.floor((computedRoutes.comfort?.totalTime || 510) / 60) + 'h ' + ((computedRoutes.comfort?.totalTime || 510) % 60) + 'm',
-            transfers: (computedRoutes.comfort?.transfers || 2) + ' transfers',
+            transfers: (computedRoutes.comfort?.transfers ?? 1) + ' transfers',
             topsisScore: computedRoutes.comfort?.ccFinal || 0,
             routeStops: computedRoutes.comfort?.stopNames || [],
             rawLegs: computedRoutes.comfort?.legs || [],
@@ -110,9 +116,12 @@ function SearchResults() {
                 color: leg.mode === 'bus' ? '#D97706' : leg.mode === 'train' ? '#1A56DB' : '#0EA5E9',
                 bg: leg.mode === 'bus' ? '#FFFBEB' : leg.mode === 'train' ? '#EFF6FF' : '#F0F9FF',
             })),
-            dest: 'New Delhi',
-            destSub: computedRoutes.comfort?.stopNames
-                ?.slice(-2, -1)[0] || 'via Delhi ISBT',
+            dest: computedRoutes.comfort?.stopNames?.slice(-1)[0]
+                || (selectedCorridor === 'juit_rampur' ? 'Rampur Bushahr' : 'New Delhi'),
+            destSub: computedRoutes.comfort?.stopNames?.slice(-2, -1)[0] ===
+                computedRoutes.comfort?.stopNames?.slice(-1)[0]
+                ? ''
+                : computedRoutes.comfort?.stopNames?.slice(-2, -1)[0] || '',
         },
         {
             id: 4,
@@ -124,7 +133,7 @@ function SearchResults() {
             tagBg: '#FFF1F2',
             total: '₹' + (computedRoutes.fastest?.totalCost || 5900),
             duration: Math.floor((computedRoutes.fastest?.totalTime || 510) / 60) + 'h ' + ((computedRoutes.fastest?.totalTime || 510) % 60) + 'm',
-            transfers: (computedRoutes.fastest?.transfers || 3) + ' transfers',
+            transfers: (computedRoutes.fastest?.transfers ?? 1) + ' transfers',
             topsisScore: computedRoutes.fastest?.ccFinal || 0,
             routeStops: computedRoutes.fastest?.stopNames || [],
             rawLegs: computedRoutes.fastest?.legs || [],
@@ -139,9 +148,12 @@ function SearchResults() {
                 color: leg.mode === 'bus' ? '#D97706' : leg.mode === 'train' ? '#1A56DB' : '#0EA5E9',
                 bg: leg.mode === 'bus' ? '#FFFBEB' : leg.mode === 'train' ? '#EFF6FF' : '#F0F9FF',
             })),
-            dest: 'New Delhi',
-            destSub: computedRoutes.fastest?.stopNames
-                ?.slice(-2, -1)[0] || 'via Delhi Airport',
+            dest: computedRoutes.fastest?.stopNames?.slice(-1)[0]
+                || (selectedCorridor === 'juit_rampur' ? 'Rampur Bushahr' : 'New Delhi'),
+            destSub: computedRoutes.fastest?.stopNames?.slice(-2, -1)[0] ===
+                computedRoutes.fastest?.stopNames?.slice(-1)[0]
+                ? ''
+                : computedRoutes.fastest?.stopNames?.slice(-2, -1)[0] || '',
         },
     ]
 
@@ -831,7 +843,9 @@ function SearchResults() {
                                                 borderRadius: '999px',
                                                 marginLeft: '8px'
                                             }}>
-                                                TOPSIS: {journey.topsisScore ? journey.topsisScore.toFixed(3) : '0.000'}
+                                                TOPSIS: {journey.topsisScore >= 0.99 
+                                                    ? '—' 
+                                                    : journey.topsisScore?.toFixed(3)}
                                             </span>
                                         </div>
                                         <div style={{
