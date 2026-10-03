@@ -230,6 +230,12 @@ function SearchResults() {
             fontFamily: 'Inter, sans-serif',
             backgroundColor: '#ffffff', minHeight: '100vh'
         }}>
+            <style>{`
+                @keyframes pulse {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0.3; }
+                }
+            `}</style>
 
             {/* TOP SEARCH BAR */}
             <section style={{
@@ -692,6 +698,140 @@ function SearchResults() {
                         display: 'flex', flexDirection: 'column',
                         gap: '20px'
                     }}>
+                        <div style={{
+                            backgroundColor: '#0F172A',
+                            borderRadius: '16px',
+                            padding: '16px 20px',
+                            marginBottom: '16px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            flexWrap: 'wrap',
+                            gap: '12px',
+                        }}>
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center', gap: '8px'
+                            }}>
+                                <div style={{
+                                    width: '8px', height: '8px',
+                                    backgroundColor: '#22C55E',
+                                    borderRadius: '50%',
+                                    boxShadow: '0 0 6px #22C55E',
+                                    animation: 'pulse 2s infinite',
+                                }} />
+                                <span style={{
+                                    color: '#F8FAFC',
+                                    fontSize: '13px', fontWeight: '700'
+                                }}>
+                                    {selectedCorridor === 'juit'
+                                        ? 'JUIT Waknaghat → New Delhi'
+                                        : selectedCorridor === 'shimla_isbt'
+                                            ? 'Shimla → New Delhi'
+                                            : 'JUIT Waknaghat → Rampur Bushahr'}
+                                </span>
+                            </div>
+
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center', gap: '20px',
+                                flexWrap: 'wrap'
+                            }}>
+                                <div style={{ textAlign: 'center' }}>
+                                    <div style={{
+                                        color: '#22C55E',
+                                        fontSize: '18px', fontWeight: '800'
+                                    }}>
+                                        {candidates.length}
+                                    </div>
+                                    <div style={{
+                                        color: '#94A3B8',
+                                        fontSize: '10px', fontWeight: '600',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.05em'
+                                    }}>
+                                        Routes Evaluated
+                                    </div>
+                                </div>
+
+                                <div style={{
+                                    width: '1px', height: '32px',
+                                    backgroundColor: '#334155'
+                                }} />
+
+                                <div style={{ textAlign: 'center' }}>
+                                    <div style={{
+                                        color: '#60A5FA',
+                                        fontSize: '18px', fontWeight: '800'
+                                    }}>
+                                        {selectedCorridor === 'juit' ? '21'
+                                            : selectedCorridor === 'shimla_isbt'
+                                                ? '23' : '15'}
+                                    </div>
+                                    <div style={{
+                                        color: '#94A3B8',
+                                        fontSize: '10px', fontWeight: '600',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.05em'
+                                    }}>
+                                        HRTC Services
+                                    </div>
+                                </div>
+
+                                <div style={{
+                                    width: '1px', height: '32px',
+                                    backgroundColor: '#334155'
+                                }} />
+
+                                <div style={{ textAlign: 'center' }}>
+                                    <div style={{
+                                        color: '#F59E0B',
+                                        fontSize: '18px', fontWeight: '800'
+                                    }}>
+                                        3
+                                    </div>
+                                    <div style={{
+                                        color: '#94A3B8',
+                                        fontSize: '10px', fontWeight: '600',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.05em'
+                                    }}>
+                                        SM Measures
+                                    </div>
+                                </div>
+
+                                <div style={{
+                                    width: '1px', height: '32px',
+                                    backgroundColor: '#334155'
+                                }} />
+
+                                <div style={{ textAlign: 'center' }}>
+                                    <div style={{
+                                        color: '#A78BFA',
+                                        fontSize: '18px', fontWeight: '800'
+                                    }}>
+                                        5
+                                    </div>
+                                    <div style={{
+                                        color: '#94A3B8',
+                                        fontSize: '10px', fontWeight: '600',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.05em'
+                                    }}>
+                                        Criteria
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style={{
+                                fontSize: '11px',
+                                color: '#64748B',
+                                fontWeight: '600',
+                            }}>
+                                Modified TOPSIS · hrtcbustime.com
+                            </div>
+                        </div>
+
                         {journeys.map((journey) => (
                             <article key={journey.id} style={{
                                 backgroundColor: '#fff', borderRadius: '16px',
