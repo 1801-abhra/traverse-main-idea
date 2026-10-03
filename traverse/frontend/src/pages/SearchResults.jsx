@@ -35,6 +35,11 @@ function SearchResults() {
             tag: 'Best Overall',
             tagColor: '#1A56DB',
             tagBg: '#EFF6FF',
+            departs: computedRoutes.balanced?.legs?.[0]?.departs 
+                && computedRoutes.balanced.legs[0].departs !== 'On demand'
+                && computedRoutes.balanced.legs[0].departs !== 'Multiple'
+                ? computedRoutes.balanced.legs[0].departs
+                : null,
             total: '₹' + (computedRoutes.balanced?.totalCost || 1700),
             duration: Math.floor((computedRoutes.balanced?.totalTime || 510) / 60) + 'h ' + ((computedRoutes.balanced?.totalTime || 510) % 60) + 'm',
             transfers: (computedRoutes.balanced?.transfers ?? 1) + ' transfers',
@@ -67,6 +72,11 @@ function SearchResults() {
             tag: 'Save Most',
             tagColor: '#059669',
             tagBg: '#ECFDF5',
+            departs: computedRoutes.cheapest?.legs?.[0]?.departs
+                && computedRoutes.cheapest.legs[0].departs !== 'On demand'
+                && computedRoutes.cheapest.legs[0].departs !== 'Multiple'
+                ? computedRoutes.cheapest.legs[0].departs
+                : null,
             total: '₹' + (computedRoutes.cheapest?.totalCost || 1300),
             duration: Math.floor((computedRoutes.cheapest?.totalTime || 510) / 60) + 'h ' + ((computedRoutes.cheapest?.totalTime || 510) % 60) + 'm',
             transfers: (computedRoutes.cheapest?.transfers ?? 1) + ' transfers',
@@ -99,6 +109,11 @@ function SearchResults() {
             tag: 'Premium',
             tagColor: '#7C3AED',
             tagBg: '#F5F3FF',
+            departs: computedRoutes.comfort?.legs?.[0]?.departs
+                && computedRoutes.comfort.legs[0].departs !== 'On demand'
+                && computedRoutes.comfort.legs[0].departs !== 'Multiple'
+                ? computedRoutes.comfort.legs[0].departs
+                : null,
             total: '₹' + (computedRoutes.comfort?.totalCost || 4500),
             duration: Math.floor((computedRoutes.comfort?.totalTime || 510) / 60) + 'h ' + ((computedRoutes.comfort?.totalTime || 510) % 60) + 'm',
             transfers: (computedRoutes.comfort?.transfers ?? 1) + ' transfers',
@@ -131,6 +146,11 @@ function SearchResults() {
             tag: 'Save Time',
             tagColor: '#DC2626',
             tagBg: '#FFF1F2',
+            departs: computedRoutes.fastest?.legs?.[0]?.departs
+                && computedRoutes.fastest.legs[0].departs !== 'On demand'
+                && computedRoutes.fastest.legs[0].departs !== 'Multiple'
+                ? computedRoutes.fastest.legs[0].departs
+                : null,
             total: '₹' + (computedRoutes.fastest?.totalCost || 5900),
             duration: Math.floor((computedRoutes.fastest?.totalTime || 510) / 60) + 'h ' + ((computedRoutes.fastest?.totalTime || 510) % 60) + 'm',
             transfers: (computedRoutes.fastest?.transfers ?? 1) + ' transfers',
@@ -808,6 +828,23 @@ function SearchResults() {
                                         display: 'flex', gap: '24px',
                                         alignItems: 'center', flexWrap: 'wrap'
                                     }}>
+                                        {journey.departs && (
+                                            <div style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '4px',
+                                                fontSize: '13px',
+                                                fontWeight: '700',
+                                                color: '#1A56DB',
+                                                backgroundColor: '#EFF6FF',
+                                                padding: '4px 10px',
+                                                borderRadius: '999px',
+                                                border: '1px solid #BFDBFE',
+                                            }}>
+                                                <span>🕐</span>
+                                                Departs {journey.departs}
+                                            </div>
+                                        )}
                                         <div style={{
                                             display: 'flex',
                                             alignItems: 'center', gap: '6px'
