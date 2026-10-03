@@ -304,6 +304,26 @@ function SearchResults() {
             fontFamily: 'Inter, sans-serif',
             backgroundColor: '#ffffff', minHeight: '100vh'
         }}>
+            {isComputing && (
+              <div style={{
+                position: 'fixed',
+                top: 0, left: 0, right: 0,
+                zIndex: 9999,
+                height: '3px',
+                backgroundColor: '#E2E8F0',
+              }}>
+                <div style={{
+                  height: '100%',
+                  backgroundColor: '#1A56DB',
+                  borderRadius: '0 999px 999px 0',
+                  width: ((computingStep + 1) / 
+                    computingSteps.length * 100) + '%',
+                  transition: 'width 0.18s ease',
+                  boxShadow: '0 0 8px #1A56DB',
+                }} />
+              </div>
+            )}
+
             <style>{`
                 @keyframes pulse {
                     0%, 100% { opacity: 1; }
@@ -487,17 +507,19 @@ function SearchResults() {
               <div style={{
                 display: 'flex', alignItems: 'center',
                 gap: '6px', fontSize: '12px',
-                color: '#22C55E', fontWeight: '700'
+                color: isComputing ? '#1A56DB' : '#22C55E', fontWeight: '700'
               }}>
                 <div style={{ width: '8px', height: '8px',
-                  backgroundColor: '#22C55E',
+                  backgroundColor: isComputing ? '#1A56DB' : '#22C55E',
                   borderRadius: '999px' }} />
-                {selectedCorridor === 'juit' 
-                  ? '21 real HRTC services'
+                {isComputing 
+                  ? computingSteps[computingStep]
+                  : selectedCorridor === 'juit'
+                  ? '21 real HRTC services · Modified TOPSIS ranked'
                   : selectedCorridor === 'shimla_isbt'
-                  ? '23 real HRTC services'
-                  : '15 real HRTC services'
-                } · Modified TOPSIS ranked
+                  ? '23 real HRTC services · Modified TOPSIS ranked'
+                  : '15 real HRTC services · Modified TOPSIS ranked'
+                }
               </div>
             </div>
 
@@ -772,71 +794,10 @@ function SearchResults() {
                     </div>
 
                     {/* Journey Cards */}
-                    <div style={{ position: 'relative' }}>
-                        {isComputing && (
-                            <div style={{
-                                position: 'absolute',
-                                inset: 0,
-                                backgroundColor: 'rgba(255,255,255,0.92)',
-                                zIndex: 100,
-                                borderRadius: '16px',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '20px',
-                                backdropFilter: 'blur(4px)',
-                            }}>
-                                <div style={{
-                                    width: '48px', height: '48px',
-                                    border: '4px solid #E2E8F0',
-                                    borderTop: '4px solid #1A56DB',
-                                    borderRadius: '50%',
-                                    animation: 'spin 0.8s linear infinite',
-                                }} />
-                                
-                                <div style={{ textAlign: 'center' }}>
-                                    <div style={{
-                                        fontSize: '15px',
-                                        fontWeight: '800',
-                                        color: '#0F172A',
-                                        marginBottom: '6px',
-                                    }}>
-                                        Modified TOPSIS Running
-                                    </div>
-                                    <div style={{
-                                        fontSize: '13px',
-                                        color: '#1A56DB',
-                                        fontWeight: '600',
-                                        minHeight: '20px',
-                                    }}>
-                                        {computingSteps[computingStep]}
-                                    </div>
-                                </div>
-
-                                <div style={{
-                                    display: 'flex',
-                                    gap: '6px',
-                                    alignItems: 'center',
-                                }}>
-                                    {computingSteps.map((_, i) => (
-                                        <div key={i} style={{
-                                            width: i === computingStep ? '20px' : '6px',
-                                            height: '6px',
-                                            borderRadius: '999px',
-                                            backgroundColor: i <= computingStep 
-                                                ? '#1A56DB' : '#E2E8F0',
-                                            transition: 'all 0.2s ease',
-                                        }} />
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        <div style={{
-                            display: 'flex', flexDirection: 'column',
-                            gap: '20px'
-                        }}>
+                    <div style={{
+                        display: 'flex', flexDirection: 'column',
+                        gap: '20px'
+                    }}>
                         <div style={{
                             backgroundColor: '#0F172A',
                             borderRadius: '16px',
@@ -1348,7 +1309,6 @@ function SearchResults() {
                                 </div>
                             </article>
                         ))}
-                        </div>
                     </div>
 
                     {/* Pagination */}
