@@ -195,10 +195,10 @@ function JourneyBuilder() {
                 }],
             departure: '08:30 AM',
             arrival: '09:00 AM',
-            duration: Math.floor(leg.time / 60) > 0
-                ? Math.floor(leg.time / 60) + 'h '
-                + (leg.time % 60) + 'm'
-                : leg.time + 'm',
+            duration: Math.floor((dynamicLegs[i]?.time || 30) / 60) > 0
+                ? Math.floor((dynamicLegs[i]?.time || 30) / 60) + 'h ' +
+                  ((dynamicLegs[i]?.time || 30) % 60) + 'm'
+                : ((dynamicLegs[i]?.time || 30)) + 'm',
         }))
         : [
             {
@@ -520,10 +520,36 @@ function JourneyBuilder() {
                                                 </div>
                                                 <div style={{
                                                     fontSize: '13px',
-                                                    color: '#94A3B8', marginTop: '4px'
+                                                    color: '#94A3B8', marginTop: '4px',
+                                                    display: 'flex', alignItems: 'center',
+                                                    gap: '6px'
                                                 }}>
-                                                    {leg.departure} → {leg.arrival}
-                                                    · {leg.duration}
+                                                    <span>
+                                                        {activeLegSelections[leg.key]?.departs
+                                                            && activeLegSelections[leg.key].departs !== 'On demand'
+                                                            && activeLegSelections[leg.key].departs !== 'Multiple'
+                                                            && activeLegSelections[leg.key].departs !== 'Frequent'
+                                                            ? 'Dep: ' + activeLegSelections[leg.key].departs
+                                                            : activeLegSelections[leg.key]?.departs === 'Frequent'
+                                                                ? 'Frequent service'
+                                                                : 'On demand'}
+                                                    </span>
+                                                    <span>·</span>
+                                                    <span>
+                                                        {Math.floor((activeLegSelections[leg.key]?.time 
+                                                            || dynamicLegs[legs.indexOf(leg)]?.time 
+                                                            || 30) / 60) > 0
+                                                            ? Math.floor((activeLegSelections[leg.key]?.time 
+                                                                || dynamicLegs[legs.indexOf(leg)]?.time 
+                                                                || 30) / 60) + 'h ' +
+                                                              ((activeLegSelections[leg.key]?.time 
+                                                                || dynamicLegs[legs.indexOf(leg)]?.time 
+                                                                || 30) % 60) + 'm'
+                                                            : (activeLegSelections[leg.key]?.time 
+                                                                || dynamicLegs[legs.indexOf(leg)]?.time 
+                                                                || 30) + 'm'
+                                                        }
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
