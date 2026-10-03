@@ -454,60 +454,98 @@ export function runTOPSIS(candidates, persona = 'balanced') {
 export function getTopRoutePerPersona(candidates) {
     if (!candidates || candidates.length === 0) return {}
 
-    const personas = ['balanced', 'cheapest', 'comfort', 'fastest']
-    const result = {}
-    const usedRouteSignatures = new Set()
+    // Get top ranked for each persona independently
+    const balanced = runPipeline(candidates, 'balanced').ranked
+    const cheapest = runPipeline(candidates, 'cheapest').ranked
+    const comfort = runPipeline(candidates, 'comfort').ranked
+    const fastest = runPipeline(candidates, 'fastest').ranked
 
-    // Signature = primary mode combination only
-    // Forces each card to show a DIFFERENT MODE TYPE
-    // e.g. bus route, train route, flight route, cab route
-    const getSignature = (route) => {
-        const modes = [...new Set(route.route.legs.map(l => l.mode))]
-        // Sort modes for consistent signature
-        modes.sort()
-        return modes.join('+')
-    }
+    // Mode signature for deduplication
+    const modeSig = (r) =>
+        [...new Set(r.route.legs.map(l => l.mode))].sort().join('+')
 
-    for (const persona of personas) {
-        const { ranked } = runPipeline(candidates, persona)
+    // RULE 1: Recommended = absolute top balanced route (no restriction)
+    const recommendedRoute = balanced[0]
+    const recommendedSig = modeSig(recommendedRoute)
 
-        // Find first ranked route not already used by higher priority persona
-        let chosen = null
-        for (const r of ranked) {
-            const sig = getSignature(r)
-            if (!usedRouteSignatures.has(sig)) {
-                chosen = r
-                usedRouteSignatures.add(sig)
-                break
-            }
-        }
+    // RULE 2: Cheapest = genuinely cheapest route by cost
+    // ALWAYS show the lowest cost route
+    // If same legs as Recommended, show same route (honest)
+    // Never show a MORE expensive route just to be different
+    const sortedByCost = [...cheapest].sort(
+        (a, b) => a.route.totalCost - b.route.totalCost
+    )
+    const lowestCost = sortedByCost[0].route.totalCost
+    const recommendedLegIds = recommendedRoute.route.legs
+        .map(l => l.id).join('|')
 
-        // Fallback: if all routes used, just take top ranked
-        if (!chosen) chosen = ranked[0]
-
-        const personaLabels = {
-            balanced: 'Recommended',
-            cheapest: 'Cheapest',
-            comfort: 'Most Comfortable',
-            fastest: 'Fastest',
-        }
-
-        result[persona] = {
-            ...chosen,
-            label: personaLabels[persona],
-            stops: chosen.route.stops,
-            stopNames: chosen.route.stopNames,
-            legs: chosen.route.legs,
-            modes: chosen.route.modes,
-            totalCost: chosen.route.totalCost,
-            totalTime: chosen.route.totalTime,
-            avgComfort: chosen.route.avgComfort,
-            avgReliability: chosen.route.avgReliability,
-            transfers: chosen.route.transfers,
+    // Among same-cost routes, prefer one different from Recommended
+    let cheapestRoute = sortedByCost[0]
+    for (const r of sortedByCost) {
+        if (r.route.totalCost > lowestCost) break // stop at lowest cost group
+        const legIds = r.route.legs.map(l => l.id).join('|')
+        if (legIds !== recommendedLegIds) {
+            cheapestRoute = r
+            break
         }
     }
+    const cheapestSig = modeSig(cheapestRoute)
 
-    return result
+    // RULE 3: Comfortable = best comfort route
+    // Must be different mode from Recommended
+    // (flight should win here — cab+flight is unique)
+    let comfortRoute = comfort[0]
+    for (const r of comfort) {
+        if (modeSig(r) !== recommendedSig &&
+            modeSig(r) !== cheapestSig) {
+            comfortRoute = r
+            break
+        }
+    }
+    const comfortSig = modeSig(comfortRoute)
+
+    // RULE 4: Fastest = fastest route by TIME
+    // Must be different mode from Comfortable
+    // Sort by actual time to ensure genuinely fastest appears
+    const fastestByTime = [...fastest].sort(
+        (a, b) => a.route.totalTime - b.route.totalTime
+    )
+    let fastestRoute = fastestByTime[0]
+    for (const r of fastestByTime) {
+        const sig = modeSig(r)
+        if (sig !== comfortSig) {
+            fastestRoute = r
+            break
+        }
+    }
+
+    const personaLabels = {
+        balanced: 'Recommended',
+        cheapest: 'Cheapest',
+        comfort: 'Most Comfortable',
+        fastest: 'Fastest',
+    }
+
+    const makeResult = (r, persona) => ({
+        ...r,
+        label: personaLabels[persona],
+        stops: r.route.stops,
+        stopNames: r.route.stopNames,
+        legs: r.route.legs,
+        modes: r.route.modes,
+        totalCost: r.route.totalCost,
+        totalTime: r.route.totalTime,
+        avgComfort: r.route.avgComfort,
+        avgReliability: r.route.avgReliability,
+        transfers: r.route.transfers,
+    })
+
+    return {
+        balanced: makeResult(recommendedRoute, 'balanced'),
+        cheapest: makeResult(cheapestRoute, 'cheapest'),
+        comfort: makeResult(comfortRoute, 'comfort'),
+        fastest: makeResult(fastestRoute, 'fastest'),
+    }
 }
 
 // ------------------------------------------------------------
