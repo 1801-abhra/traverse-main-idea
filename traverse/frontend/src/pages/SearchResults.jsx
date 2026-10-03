@@ -35,13 +35,18 @@ function SearchResults() {
             tag: 'Best Overall',
             tagColor: '#1A56DB',
             tagBg: '#EFF6FF',
-            accentColor: computedRoutes.balanced?.modes
-                ?.includes('flight') ? '#7C3AED'
-                : computedRoutes.balanced?.modes
-                    ?.includes('train') ? '#1A56DB'
-                    : computedRoutes.balanced?.modes
-                        ?.includes('bus') ? '#D97706'
-                        : '#0EA5E9',
+            accentColor: (() => {
+                const legs = computedRoutes.balanced?.legs || []
+                const mainLeg = [...legs].sort((a, b) => 
+                    (b.time || 0) - (a.time || 0))[0]
+                const mode = mainLeg?.mode || 'bus'
+                return mode === 'flight' ? '#7C3AED'
+                    : mode === 'train' ? '#1A56DB'
+                    : mode === 'walk' ? '#22C55E'
+                    : mode === 'metro' ? '#8B5CF6'
+                    : mode === 'cab' ? '#0EA5E9'
+                    : '#D97706'
+            })(),
             departs: computedRoutes.balanced?.legs?.[0]?.departs 
                 && computedRoutes.balanced.legs[0].departs !== 'On demand'
                 && computedRoutes.balanced.legs[0].departs !== 'Multiple'
@@ -79,13 +84,18 @@ function SearchResults() {
             tag: 'Save Most',
             tagColor: '#059669',
             tagBg: '#ECFDF5',
-            accentColor: computedRoutes.cheapest?.modes
-                ?.includes('flight') ? '#7C3AED'
-                : computedRoutes.cheapest?.modes
-                    ?.includes('train') ? '#1A56DB'
-                    : computedRoutes.cheapest?.modes
-                        ?.includes('bus') ? '#D97706'
-                        : '#0EA5E9',
+            accentColor: (() => {
+                const legs = computedRoutes.cheapest?.legs || []
+                const mainLeg = [...legs].sort((a, b) => 
+                    (b.time || 0) - (a.time || 0))[0]
+                const mode = mainLeg?.mode || 'bus'
+                return mode === 'flight' ? '#7C3AED'
+                    : mode === 'train' ? '#1A56DB'
+                    : mode === 'walk' ? '#22C55E'
+                    : mode === 'metro' ? '#8B5CF6'
+                    : mode === 'cab' ? '#0EA5E9'
+                    : '#D97706'
+            })(),
             departs: computedRoutes.cheapest?.legs?.[0]?.departs
                 && computedRoutes.cheapest.legs[0].departs !== 'On demand'
                 && computedRoutes.cheapest.legs[0].departs !== 'Multiple'
@@ -123,13 +133,18 @@ function SearchResults() {
             tag: 'Premium',
             tagColor: '#7C3AED',
             tagBg: '#F5F3FF',
-            accentColor: computedRoutes.comfort?.modes
-                ?.includes('flight') ? '#7C3AED'
-                : computedRoutes.comfort?.modes
-                    ?.includes('train') ? '#1A56DB'
-                    : computedRoutes.comfort?.modes
-                        ?.includes('bus') ? '#D97706'
-                        : '#0EA5E9',
+            accentColor: (() => {
+                const legs = computedRoutes.comfort?.legs || []
+                const mainLeg = [...legs].sort((a, b) => 
+                    (b.time || 0) - (a.time || 0))[0]
+                const mode = mainLeg?.mode || 'bus'
+                return mode === 'flight' ? '#7C3AED'
+                    : mode === 'train' ? '#1A56DB'
+                    : mode === 'walk' ? '#22C55E'
+                    : mode === 'metro' ? '#8B5CF6'
+                    : mode === 'cab' ? '#0EA5E9'
+                    : '#D97706'
+            })(),
             departs: computedRoutes.comfort?.legs?.[0]?.departs
                 && computedRoutes.comfort.legs[0].departs !== 'On demand'
                 && computedRoutes.comfort.legs[0].departs !== 'Multiple'
@@ -167,13 +182,18 @@ function SearchResults() {
             tag: 'Save Time',
             tagColor: '#DC2626',
             tagBg: '#FFF1F2',
-            accentColor: computedRoutes.fastest?.modes
-                ?.includes('flight') ? '#7C3AED'
-                : computedRoutes.fastest?.modes
-                    ?.includes('train') ? '#1A56DB'
-                    : computedRoutes.fastest?.modes
-                        ?.includes('bus') ? '#D97706'
-                        : '#0EA5E9',
+            accentColor: (() => {
+                const legs = computedRoutes.fastest?.legs || []
+                const mainLeg = [...legs].sort((a, b) => 
+                    (b.time || 0) - (a.time || 0))[0]
+                const mode = mainLeg?.mode || 'cab'
+                return mode === 'flight' ? '#7C3AED'
+                    : mode === 'train' ? '#1A56DB'
+                    : mode === 'walk' ? '#22C55E'
+                    : mode === 'metro' ? '#8B5CF6'
+                    : mode === 'cab' ? '#0EA5E9'
+                    : '#D97706'
+            })(),
             departs: computedRoutes.fastest?.legs?.[0]?.departs
                 && computedRoutes.fastest.legs[0].departs !== 'On demand'
                 && computedRoutes.fastest.legs[0].departs !== 'Multiple'
