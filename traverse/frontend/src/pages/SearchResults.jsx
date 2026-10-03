@@ -35,6 +35,13 @@ function SearchResults() {
             tag: 'Best Overall',
             tagColor: '#1A56DB',
             tagBg: '#EFF6FF',
+            accentColor: computedRoutes.balanced?.modes
+                ?.includes('flight') ? '#7C3AED'
+                : computedRoutes.balanced?.modes
+                    ?.includes('train') ? '#1A56DB'
+                    : computedRoutes.balanced?.modes
+                        ?.includes('bus') ? '#D97706'
+                        : '#0EA5E9',
             departs: computedRoutes.balanced?.legs?.[0]?.departs 
                 && computedRoutes.balanced.legs[0].departs !== 'On demand'
                 && computedRoutes.balanced.legs[0].departs !== 'Multiple'
@@ -72,6 +79,13 @@ function SearchResults() {
             tag: 'Save Most',
             tagColor: '#059669',
             tagBg: '#ECFDF5',
+            accentColor: computedRoutes.cheapest?.modes
+                ?.includes('flight') ? '#7C3AED'
+                : computedRoutes.cheapest?.modes
+                    ?.includes('train') ? '#1A56DB'
+                    : computedRoutes.cheapest?.modes
+                        ?.includes('bus') ? '#D97706'
+                        : '#0EA5E9',
             departs: computedRoutes.cheapest?.legs?.[0]?.departs
                 && computedRoutes.cheapest.legs[0].departs !== 'On demand'
                 && computedRoutes.cheapest.legs[0].departs !== 'Multiple'
@@ -109,6 +123,13 @@ function SearchResults() {
             tag: 'Premium',
             tagColor: '#7C3AED',
             tagBg: '#F5F3FF',
+            accentColor: computedRoutes.comfort?.modes
+                ?.includes('flight') ? '#7C3AED'
+                : computedRoutes.comfort?.modes
+                    ?.includes('train') ? '#1A56DB'
+                    : computedRoutes.comfort?.modes
+                        ?.includes('bus') ? '#D97706'
+                        : '#0EA5E9',
             departs: computedRoutes.comfort?.legs?.[0]?.departs
                 && computedRoutes.comfort.legs[0].departs !== 'On demand'
                 && computedRoutes.comfort.legs[0].departs !== 'Multiple'
@@ -146,6 +167,13 @@ function SearchResults() {
             tag: 'Save Time',
             tagColor: '#DC2626',
             tagBg: '#FFF1F2',
+            accentColor: computedRoutes.fastest?.modes
+                ?.includes('flight') ? '#7C3AED'
+                : computedRoutes.fastest?.modes
+                    ?.includes('train') ? '#1A56DB'
+                    : computedRoutes.fastest?.modes
+                        ?.includes('bus') ? '#D97706'
+                        : '#0EA5E9',
             departs: computedRoutes.fastest?.legs?.[0]?.departs
                 && computedRoutes.fastest.legs[0].departs !== 'On demand'
                 && computedRoutes.fastest.legs[0].departs !== 'Multiple'
@@ -649,7 +677,7 @@ function SearchResults() {
                                 backgroundColor: '#fff', borderRadius: '16px',
                                 padding: '24px',
                                 border: '1px solid #E2E8F0',
-                                borderLeft: '4px solid #1A56DB',
+                                borderLeft: '4px solid ' + journey.accentColor,
                                 boxShadow: '0 1px 3px rgba(0,0,0,0.06)'
                             }}>
                                 {/* Badges */}
@@ -672,14 +700,46 @@ function SearchResults() {
                                             {journey.badge}
                                         </span>
                                     </div>
-                                    <span style={{
-                                        padding: '4px 10px', borderRadius: '6px',
-                                        fontSize: '12px', fontWeight: '700',
-                                        backgroundColor: journey.tagBg,
-                                        color: journey.tagColor
-                                    }}>
-                                        {journey.tag}
-                                    </span>
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <span style={{
+                                            padding: '4px 10px', borderRadius: '6px',
+                                            fontSize: '12px', fontWeight: '700',
+                                            backgroundColor: journey.tagBg,
+                                            color: journey.tagColor
+                                        }}>
+                                            {journey.tag}
+                                        </span>
+                                        <span style={{
+                                            fontSize: '11px',
+                                            fontWeight: '700',
+                                            padding: '3px 10px',
+                                            borderRadius: '999px',
+                                            backgroundColor: journey.accentColor + '15',
+                                            color: journey.accentColor,
+                                            border: '1px solid ' + journey.accentColor + '40',
+                                            marginLeft: '6px',
+                                        }}>
+                                            {computedRoutes[
+                                                journey.id === 1 ? 'balanced'
+                                                : journey.id === 2 ? 'cheapest'
+                                                : journey.id === 3 ? 'comfort'
+                                                : 'fastest'
+                                            ]?.modes?.includes('flight') ? '✈ Flight'
+                                            : computedRoutes[
+                                                journey.id === 1 ? 'balanced'
+                                                : journey.id === 2 ? 'cheapest'
+                                                : journey.id === 3 ? 'comfort'
+                                                : 'fastest'
+                                            ]?.modes?.includes('train') ? '🚆 Train'
+                                            : computedRoutes[
+                                                journey.id === 1 ? 'balanced'
+                                                : journey.id === 2 ? 'cheapest'
+                                                : journey.id === 3 ? 'comfort'
+                                                : 'fastest'
+                                            ]?.modes?.includes('bus') ? '🚌 Bus'
+                                            : '🚖 Cab'}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 {/* Journey Path */}
