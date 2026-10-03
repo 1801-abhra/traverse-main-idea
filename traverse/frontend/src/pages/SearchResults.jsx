@@ -26,6 +26,25 @@ function SearchResults() {
         fastest: allTopRoutes.fastest,
     }
 
+    const allCosts = [
+        computedRoutes.balanced?.totalCost || 0,
+        computedRoutes.cheapest?.totalCost || 0,
+        computedRoutes.comfort?.totalCost || 0,
+        computedRoutes.fastest?.totalCost || 0,
+    ].filter(c => c > 0)
+
+    const allTimes = [
+        computedRoutes.balanced?.totalTime || 0,
+        computedRoutes.cheapest?.totalTime || 0,
+        computedRoutes.comfort?.totalTime || 0,
+        computedRoutes.fastest?.totalTime || 0,
+    ].filter(t => t > 0)
+
+    const maxCost = Math.max(...allCosts)
+    const minCost = Math.min(...allCosts)
+    const maxTime = Math.max(...allTimes)
+    const minTime = Math.min(...allTimes)
+
     const journeys = [
         {
             id: 1,
@@ -35,6 +54,11 @@ function SearchResults() {
             tag: 'Best Overall',
             tagColor: '#1A56DB',
             tagBg: '#EFF6FF',
+            savingsBadge: computedRoutes.balanced?.totalCost === minCost
+                ? '💰 Lowest Price'
+                : computedRoutes.balanced?.totalTime === minTime
+                ? '⚡ Fastest Option'
+                : '⚖️ Best Balance',
             accentColor: (() => {
                 const legs = computedRoutes.balanced?.legs || []
                 const mainLeg = [...legs].sort((a, b) => 
@@ -84,6 +108,9 @@ function SearchResults() {
             tag: 'Save Most',
             tagColor: '#059669',
             tagBg: '#ECFDF5',
+            savingsBadge: '💰 Save ₹' + (
+                maxCost - (computedRoutes.cheapest?.totalCost || 0)
+            ) + ' vs costliest',
             accentColor: (() => {
                 const legs = computedRoutes.cheapest?.legs || []
                 const mainLeg = [...legs].sort((a, b) => 
@@ -133,6 +160,10 @@ function SearchResults() {
             tag: 'Premium',
             tagColor: '#7C3AED',
             tagBg: '#F5F3FF',
+            savingsBadge: '✨ Comfort Score ' + 
+                (computedRoutes.comfort?.avgComfort 
+                    ? (computedRoutes.comfort.avgComfort * 10).toFixed(0) + '%'
+                    : '80%'),
             accentColor: (() => {
                 const legs = computedRoutes.comfort?.legs || []
                 const mainLeg = [...legs].sort((a, b) => 
@@ -182,6 +213,13 @@ function SearchResults() {
             tag: 'Save Time',
             tagColor: '#DC2626',
             tagBg: '#FFF1F2',
+            savingsBadge: '⚡ Save ' + 
+                Math.floor(
+                    (maxTime - (computedRoutes.fastest?.totalTime || 0)) / 60
+                ) + 'h ' +
+                (
+                    (maxTime - (computedRoutes.fastest?.totalTime || 0)) % 60
+                ) + 'm vs slowest',
             accentColor: (() => {
                 const legs = computedRoutes.fastest?.legs || []
                 const mainLeg = [...legs].sort((a, b) => 
@@ -1160,6 +1198,21 @@ function SearchResults() {
                                         }}>
                                             {journey.transfers}
                                         </div>
+                                        {journey.savingsBadge && (
+                                            <div style={{
+                                                fontSize: '11px',
+                                                fontWeight: '700',
+                                                color: '#059669',
+                                                backgroundColor: '#ECFDF5',
+                                                border: '1px solid #A7F3D0',
+                                                padding: '3px 10px',
+                                                borderRadius: '999px',
+                                                marginTop: '4px',
+                                                display: 'inline-block',
+                                            }}>
+                                                {journey.savingsBadge}
+                                            </div>
+                                        )}
                                     </div>
                                     <button
                                         onClick={() => {
