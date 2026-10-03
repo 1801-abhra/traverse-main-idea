@@ -38,65 +38,95 @@ export const CRITERIA = {
 // ------------------------------------------------------------
 export const PERSONA_BOOST = {
     cheapest: {
-        cost: 3.0,        // strongly prefer cheap
-        time: 0.6,        // time matters less
-        comfort: 0.4,     // comfort matters less
-        reliability: 0.5, // reliability moderate
-        transfers: 0.3,   // transfers barely matter
+        cost: 4.0,        // cost completely dominates
+        time: 0.5,        // time barely matters
+        comfort: 0.2,     // comfort barely matters
+        reliability: 0.3, // reliability barely matters
+        transfers: 0.2,   // transfers barely matter
     },
     fastest: {
-        cost: 0.1,        // cost irrelevant
-        time: 8.0,        // time is everything
-        comfort: 0.3,     // comfort barely matters
-        reliability: 0.6, // reliability moderate
-        transfers: 0.3,   // transfers barely matter
+        cost: 0.05,       // cost almost irrelevant
+        time: 10.0,       // time is everything
+        comfort: 0.2,     // comfort barely matters
+        reliability: 0.5, // reliability moderate
+        transfers: 0.2,   // transfers barely matter
     },
     comfort: {
-        cost: 0.3,        // cost less important
-        time: 0.5,        // time moderate
-        comfort: 4.0,     // comfort is everything
-        reliability: 2.5, // reliability very important
-        transfers: 0.4,   // transfers moderate
+        cost: 0.05,       // cost almost irrelevant
+        time: 0.3,        // time barely matters
+        comfort: 6.0,     // comfort is everything
+        reliability: 3.0, // reliability very important
+        transfers: 0.2,   // transfers barely matter
     },
     balanced: {
-        cost: 1.2,        // slightly above equal
-        time: 1.2,        // slightly above equal
-        comfort: 1.0,     // equal
-        reliability: 1.0, // equal
-        transfers: 0.4,   // transfers less important
-        // so diverse routes appear
+        cost: 1.5,        // cost important
+        time: 1.5,        // time important
+        comfort: 1.2,     // comfort slightly less
+        reliability: 1.0, // reliability equal
+        transfers: 0.3,   // transfers much less important
     },
 }
 
 // ------------------------------------------------------------
 // COMFORT SCORE ENHANCEMENT
-// Trains and flights have inherently higher comfort than buses
-// This function adjusts raw comfort scores to reflect reality
+// Applied PER LEG before averaging
+// Trains and flights genuinely more comfortable
+// Ordinary bus dragging down average is now prevented
 // Works for any corridor automatically
 // ------------------------------------------------------------
-function enhancedComfort(route) {
-    const modes = route.modes || []
-    let comfort = route.avgComfort || 5.0
+function enhancedLegComfort(leg) {
+    let comfort = leg.comfort || 5.0
+    const mode = leg.mode || ''
+    const operator = (leg.operator || '').toLowerCase()
 
-    // Train bonus — trains have reserved seats, stable ride
-    if (modes.includes('train')) {
-        comfort = Math.min(10, comfort + 1.5)
+    // Flight — most comfortable, no road vibration, AC always
+    if (mode === 'flight') {
+        comfort = Math.min(10, comfort + 2.5)
     }
-    // Flight bonus — fastest, most comfortable
-    if (modes.includes('flight')) {
+    // Train — reserved seat, stable ride, dining car
+    else if (mode === 'train') {
         comfort = Math.min(10, comfort + 2.0)
+        // Vande Bharat extra bonus
+        if (operator.includes('vande')) {
+            comfort = Math.min(10, comfort + 0.5)
+        }
     }
-    // Walk penalty — less comfortable for long journeys
-    if (modes.includes('walk') && route.totalTime > 300) {
-        comfort = Math.max(1, comfort - 0.5)
+    // Premium bus — Volvo AC already has high comfort (7.8)
+    // but metro/city travel at end drags average down
+    // Give metro/cab last-mile a minimum comfort of 6.0
+    else if (mode === 'metro') {
+        comfort = Math.max(comfort, 6.0)
     }
+    // Walk penalty for long journeys
+    else if (mode === 'walk') {
+        comfort = Math.max(1, comfort - 1.0)
+    }
+
     return comfort
+}
+
+function enhancedComfort(route) {
+    if (!route.legs || route.legs.length === 0) {
+        return route.avgComfort || 5.0
+    }
+    // Compute comfort using WEIGHTED average
+    // Main journey leg (longest time) contributes more
+    const totalTime = route.legs.reduce((s, l) => s + (l.time || 0), 0)
+    if (totalTime === 0) return route.avgComfort || 5.0
+
+    const weightedSum = route.legs.reduce((s, leg) => {
+        const legComfort = enhancedLegComfort(leg)
+        const weight = (leg.time || 1) / totalTime
+        return s + legComfort * weight
+    }, 0)
+
+    return Math.round(weightedSum * 10) / 10
 }
 
 // ------------------------------------------------------------
 // STEP 1: BUILD DECISION MATRIX
 // Extracts 5 criteria values from each candidate route
-// Uses enhanced comfort scoring for fair comparison
+// Uses weighted enhanced comfort scoring
 // Works automatically for any corridor
 // ------------------------------------------------------------
 export function buildDecisionMatrix(routes) {
@@ -106,7 +136,7 @@ export function buildDecisionMatrix(routes) {
         values: [
             r.totalCost,              // C1: cost (minimize)
             r.totalTime,              // C2: time (minimize)
-            enhancedComfort(r),       // C3: comfort enhanced (maximize)
+            enhancedComfort(r),       // C3: weighted comfort (maximize)
             r.avgReliability,         // C4: reliability (maximize)
             r.transfers,              // C5: transfers (minimize)
         ]
@@ -460,33 +490,12 @@ export function runTOPSISWithSteps(candidates, persona = 'balanced') {
         NIS,
 
         // Step 6: All SM scores
-        allScored: scored.map(s => ({
-            id: s.id,
-            label: s.route.operators,
-            stops: s.route.stopNames,
-            totalCost: s.route.totalCost,
-            totalTime: s.route.totalTime,
-            cc1: s.cc1,
-            cc2: s.cc2,
-            cc3: s.cc3,
-            ccFinal: s.ccFinal,
-        })),
-
-        // Step 7: Final ranking
-        ranked: ranked.slice(0, 4).map((r, i) => ({
-            rank: i + 1,
-            ...r,
-            stops: r.route.stopNames,
-            legs: r.route.legs,
-            totalCost: r.route.totalCost,
-            totalTime: r.route.totalTime,
-            avgComfort: r.route.avgComfort,
-            avgReliability: r.route.avgReliability,
-            transfers: r.route.transfers,
-        })),
+        allScores: scored,
+        ranked,
 
         // Criteria labels for table headers
-        criteriaLabels: ['Cost (₹)', 'Time (min)', 'Comfort', 'Reliability', 'Transfers'],
+        criteriaLabels: ['Cost (₹)', 'Time (min)', 
+            'Comfort', 'Reliability', 'Transfers'],
         criteriaTypes: CRITERIA_TYPES,
     }
 }
