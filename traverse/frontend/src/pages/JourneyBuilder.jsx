@@ -28,6 +28,13 @@ function JourneyBuilder() {
         'delhi_isbt': 'Delhi ISBT Kashmere Gate',
         'igi': 'IGI Airport T3',
         'delhi_cp': 'New Delhi',
+        'rampur_bushahr': 'Rampur Bushahr Bus Stand',
+        'narkanda': 'Narkanda Bus Stand',
+        'shimla_isbt': 'Shimla ISBT Tutikandi',
+        'shimla_railway': 'Shimla Railway Station',
+        'kalka': 'Kalka Railway Station',
+        'parwanoo': 'Parwanoo Bus Stand',
+        'delhi_isbt_kashmere': 'Delhi ISBT Kashmere Gate',
     }
 
     const cleanDesc = (desc) => {
