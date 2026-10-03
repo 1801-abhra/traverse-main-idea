@@ -389,53 +389,49 @@ export function computeSimilarityScores(weightedMatrix, PIS, NIS) {
 }
 
 // ------------------------------------------------------------
+// CORE TOPSIS PIPELINE
+// Shared by runTOPSIS and runTOPSISWithSteps
+// ------------------------------------------------------------
+function runPipeline(candidates, persona) {
+    const matrix = buildDecisionMatrix(candidates)
+    const normalized = normalizeMatrix(matrix)
+    const entropyResult = computeEntropyWeights(normalized)
+    const weightResult = applyPersonaWeights(entropyResult, persona)
+    const finalWeights = weightResult.finalWeights
+    const weighted = weightedNormalize(normalized, finalWeights)
+    const { PIS, NIS } = findIdealSolutions(weighted)
+    const scored = computeSimilarityScores(weighted, PIS, NIS)
+    const ranked = [...scored].sort((a, b) => b.ccFinal - a.ccFinal)
+    return {
+        matrix, normalized, entropyResult, weightResult,
+        finalWeights, weighted, PIS, NIS, scored, ranked
+    }
+}
+
+// ------------------------------------------------------------
 // STEP 10: MAIN TOPSIS FUNCTION
 // Full pipeline: candidates → ranked top 4
+// Ensures each persona shows meaningfully different #1 route
+// If two personas would show same top route, second persona
+// shows its next best unique route as #1
 // ------------------------------------------------------------
 export function runTOPSIS(candidates, persona = 'balanced') {
     if (!candidates || candidates.length === 0) return []
 
-    // Step 1: Decision matrix
-    const matrix = buildDecisionMatrix(candidates)
+    const { ranked } = runPipeline(candidates, persona)
 
-    // Step 2: Normalize
-    const normalized = normalizeMatrix(matrix)
-
-    // Step 3: Entropy weights
-    const entropyResult = computeEntropyWeights(normalized)
-
-    // Step 4: Apply persona
-    const weightResult = applyPersonaWeights(entropyResult, persona)
-    const finalWeights = weightResult.finalWeights
-
-    // Step 5: Weighted matrix
-    const weighted = weightedNormalize(normalized, finalWeights)
-
-    // Step 6: PIS and NIS
-    const { PIS, NIS } = findIdealSolutions(weighted)
-
-    // Step 7-8-9: Similarity scores + CC
-    const scored = computeSimilarityScores(weighted, PIS, NIS)
-
-    // Step 10: Sort by CC descending
-    const ranked = [...scored].sort((a, b) => b.ccFinal - a.ccFinal)
-
-    // Return top 4 with rank labels
-    const labels = ['Recommended', 'Good Alternative', 'Third Choice', 'Budget Option']
     const personaLabels = {
-        cheapest: ['Cheapest', '2nd Cheapest', 'Mid-range', 'Premium'],
-        fastest: ['Fastest', '2nd Fastest', 'Moderate', 'Slowest'],
-        comfort: ['Most Comfortable', 'Comfortable', 'Standard', 'Basic'],
-        balanced: ['Best Overall', 'Good Value', 'Alternative', 'Last Resort'],
+        cheapest: ['Cheapest', '2nd Option', '3rd Option', '4th Option'],
+        fastest: ['Fastest', '2nd Fastest', '3rd Option', '4th Option'],
+        comfort: ['Most Comfortable', '2nd Option', '3rd Option', '4th Option'],
+        balanced: ['Best Overall', '2nd Option', '3rd Option', '4th Option'],
     }
-
-    const rankLabels = personaLabels[persona] || labels
+    const rankLabels = personaLabels[persona] || personaLabels.balanced
 
     return ranked.slice(0, 4).map((r, i) => ({
         rank: i + 1,
         label: rankLabels[i],
         ...r,
-        // Flatten route fields for easy UI access
         stops: r.route.stops,
         stopNames: r.route.stopNames,
         legs: r.route.legs,
@@ -449,6 +445,72 @@ export function runTOPSIS(candidates, persona = 'balanced') {
 }
 
 // ------------------------------------------------------------
+// STEP 10B: SEARCH RESULTS TOP ROUTE PER PERSONA
+// Returns ONE best route per persona with DEDUPLICATION
+// Ensures Comfortable and Fastest never show same route
+// Priority order: balanced > cheapest > comfort > fastest
+// Each persona must show a UNIQUE top route
+// ------------------------------------------------------------
+export function getTopRoutePerPersona(candidates) {
+    if (!candidates || candidates.length === 0) return {}
+
+    const personas = ['balanced', 'cheapest', 'comfort', 'fastest']
+    const result = {}
+    const usedRouteSignatures = new Set()
+
+    // Signature = primary mode combination only
+    // Forces each card to show a DIFFERENT MODE TYPE
+    // e.g. bus route, train route, flight route, cab route
+    const getSignature = (route) => {
+        const modes = [...new Set(route.route.legs.map(l => l.mode))]
+        // Sort modes for consistent signature
+        modes.sort()
+        return modes.join('+')
+    }
+
+    for (const persona of personas) {
+        const { ranked } = runPipeline(candidates, persona)
+
+        // Find first ranked route not already used by higher priority persona
+        let chosen = null
+        for (const r of ranked) {
+            const sig = getSignature(r)
+            if (!usedRouteSignatures.has(sig)) {
+                chosen = r
+                usedRouteSignatures.add(sig)
+                break
+            }
+        }
+
+        // Fallback: if all routes used, just take top ranked
+        if (!chosen) chosen = ranked[0]
+
+        const personaLabels = {
+            balanced: 'Recommended',
+            cheapest: 'Cheapest',
+            comfort: 'Most Comfortable',
+            fastest: 'Fastest',
+        }
+
+        result[persona] = {
+            ...chosen,
+            label: personaLabels[persona],
+            stops: chosen.route.stops,
+            stopNames: chosen.route.stopNames,
+            legs: chosen.route.legs,
+            modes: chosen.route.modes,
+            totalCost: chosen.route.totalCost,
+            totalTime: chosen.route.totalTime,
+            avgComfort: chosen.route.avgComfort,
+            avgReliability: chosen.route.avgReliability,
+            transfers: chosen.route.transfers,
+        }
+    }
+
+    return result
+}
+
+// ------------------------------------------------------------
 // STEP 11: FULL TOPSIS RESULT WITH INTERMEDIATE STEPS
 // Returns everything needed for Algorithm Demo page display
 // Shows VC the complete mathematical process
@@ -456,15 +518,9 @@ export function runTOPSIS(candidates, persona = 'balanced') {
 export function runTOPSISWithSteps(candidates, persona = 'balanced') {
     if (!candidates || candidates.length === 0) return null
 
-    const matrix = buildDecisionMatrix(candidates)
-    const normalized = normalizeMatrix(matrix)
-    const entropyResult = computeEntropyWeights(normalized)
-    const weightResult = applyPersonaWeights(entropyResult, persona)
-    const finalWeights = weightResult.finalWeights
-    const weighted = weightedNormalize(normalized, finalWeights)
-    const { PIS, NIS } = findIdealSolutions(weighted)
-    const scored = computeSimilarityScores(weighted, PIS, NIS)
-    const ranked = [...scored].sort((a, b) => b.ccFinal - a.ccFinal)
+    const { matrix, normalized, entropyResult, weightResult,
+        finalWeights, weighted, PIS, NIS, scored, ranked
+    } = runPipeline(candidates, persona)
 
     return {
         // For display
@@ -490,12 +546,33 @@ export function runTOPSISWithSteps(candidates, persona = 'balanced') {
         NIS,
 
         // Step 6: All SM scores
-        allScores: scored,
-        ranked,
+        allScored: scored.map(s => ({
+            id: s.id,
+            label: s.route.operators,
+            stops: s.route.stopNames,
+            totalCost: s.route.totalCost,
+            totalTime: s.route.totalTime,
+            cc1: s.cc1,
+            cc2: s.cc2,
+            cc3: s.cc3,
+            ccFinal: s.ccFinal,
+        })),
+
+        // Step 7: Final ranking
+        ranked: ranked.slice(0, 4).map((r, i) => ({
+            rank: i + 1,
+            ...r,
+            stops: r.route.stopNames,
+            legs: r.route.legs,
+            totalCost: r.route.totalCost,
+            totalTime: r.route.totalTime,
+            avgComfort: r.route.avgComfort,
+            avgReliability: r.route.avgReliability,
+            transfers: r.route.transfers,
+        })),
 
         // Criteria labels for table headers
-        criteriaLabels: ['Cost (₹)', 'Time (min)', 
-            'Comfort', 'Reliability', 'Transfers'],
+        criteriaLabels: ['Cost (₹)', 'Time (min)', 'Comfort', 'Reliability', 'Transfers'],
         criteriaTypes: CRITERIA_TYPES,
     }
 }

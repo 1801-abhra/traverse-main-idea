@@ -10,7 +10,7 @@ import {
   findCandidateRoutesForCorridor,
   SUPPORTED_CORRIDORS 
 } from '../utils/routingEngine'
-import { runTOPSIS } from '../utils/topsisEngine'
+import { runTOPSIS, getTopRoutePerPersona } from '../utils/topsisEngine'
 
 function SearchResults() {
     const navigate = useNavigate()
@@ -18,11 +18,12 @@ function SearchResults() {
     const [selectedCorridor, setSelectedCorridor] = useState('juit')
 
     const candidates = findCandidateRoutesForCorridor(selectedCorridor)
+    const allTopRoutes = getTopRoutePerPersona(candidates)
     const computedRoutes = {
-        cheapest: runTOPSIS(candidates, 'cheapest')[0],
-        balanced: runTOPSIS(candidates, 'balanced')[0],
-        comfort: runTOPSIS(candidates, 'comfort')[0],
-        fastest: runTOPSIS(candidates, 'fastest')[0],
+        balanced: allTopRoutes.balanced,
+        cheapest: allTopRoutes.cheapest,
+        comfort: allTopRoutes.comfort,
+        fastest: allTopRoutes.fastest,
     }
 
     const journeys = [
