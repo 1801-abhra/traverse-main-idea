@@ -871,19 +871,67 @@ function SearchResults() {
                                             }}>
                                                 / person
                                             </span>
-                                            <span style={{
+                                            <div style={{
+                                              display: 'flex',
+                                              alignItems: 'center',
+                                              gap: '8px',
+                                              padding: '6px 0',
+                                            }}>
+                                              <div style={{
                                                 fontSize: '11px',
                                                 fontWeight: '700',
-                                                color: '#1A56DB',
-                                                backgroundColor: '#EFF6FF',
-                                                padding: '2px 8px',
+                                                color: '#64748B',
+                                                textTransform: 'uppercase',
+                                                letterSpacing: '0.06em',
+                                                whiteSpace: 'nowrap',
+                                                flexShrink: 0,
+                                              }}>
+                                                AI Match
+                                              </div>
+                                              <div style={{
+                                                flex: 1,
+                                                height: '6px',
+                                                backgroundColor: '#E2E8F0',
                                                 borderRadius: '999px',
-                                                marginLeft: '8px'
-                                            }}>
-                                                TOPSIS: {journey.topsisScore >= 0.99 
-                                                    ? '—' 
-                                                    : journey.topsisScore?.toFixed(3)}
-                                            </span>
+                                                overflow: 'hidden',
+                                                minWidth: '60px',
+                                              }}>
+                                                <div style={{
+                                                  height: '100%',
+                                                  width: (journey.topsisScore >= 0.99
+                                                    ? 95
+                                                    : Math.round(journey.topsisScore * 100)
+                                                  ) + '%',
+                                                  backgroundColor: journey.topsisScore >= 0.8
+                                                    ? '#22C55E'
+                                                    : journey.topsisScore >= 0.6
+                                                    ? '#1A56DB'
+                                                    : journey.topsisScore >= 0.5
+                                                    ? '#F59E0B'
+                                                    : '#94A3B8',
+                                                  borderRadius: '999px',
+                                                  transition: 'width 0.3s ease',
+                                                }} />
+                                              </div>
+                                              <div style={{
+                                                fontSize: '12px',
+                                                fontWeight: '800',
+                                                color: journey.topsisScore >= 0.8
+                                                  ? '#22C55E'
+                                                  : journey.topsisScore >= 0.6
+                                                  ? '#1A56DB'
+                                                  : journey.topsisScore >= 0.5
+                                                  ? '#F59E0B'
+                                                  : '#94A3B8',
+                                                whiteSpace: 'nowrap',
+                                                flexShrink: 0,
+                                              }}>
+                                                {journey.topsisScore >= 0.99
+                                                  ? '95%'
+                                                  : Math.round(journey.topsisScore * 100) + '%'
+                                                }
+                                              </div>
+                                            </div>
                                         </div>
                                         <div style={{
                                             padding: '6px 12px', borderRadius: '999px',
