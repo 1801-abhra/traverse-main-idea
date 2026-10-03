@@ -491,33 +491,63 @@ export function getTopRoutePerPersona(candidates) {
     }
     const cheapestSig = modeSig(cheapestRoute)
 
-    // RULE 3: Comfortable = best comfort route
-    // Must be different mode from Recommended
-    // (flight should win here — cab+flight is unique)
+    // RULE 3: Fastest = ALWAYS the route with minimum time
+    // No restrictions — flight wins if it is fastest
+    // This is the #1 rule: fastest card MUST show fastest route
+    const fastestByTime = [...candidates]
+        .sort((a, b) => a.totalTime - b.totalTime)
+    const fastestRoute = fastestByTime[0]
+    // Wrap in same format as other ranked routes
+    const fastestWrapped = {
+        route: fastestRoute,
+        ccFinal: 0.999, // highest priority
+        cc1: 0.999, cc2: 0.999, cc3: 0.999,
+        id: fastestRoute.id,
+    }
+    const fastestSig = modeSig(fastestWrapped)
+
+    // RULE 4: Comfortable = best comfort route excluding flight
+    // Flight is already in Fastest card
+    // Comfortable should show: Volvo bus OR train
+    // Must NOT be same as Fastest (flight)
+    // Prefer routes under 10 hours
+
+    // Score each non-flight candidate by comfort + reasonable time
+    const comfortCandidates = candidates
+        .filter(r => !r.modes.includes('flight'))
+        .map(r => ({
+            route: r,
+            // Combined score: high comfort, reasonable time
+            // Time penalty starts after 7 hours
+            score: (r.avgComfort * 10) -
+                Math.max(0, (r.totalTime - 420) / 60) * 2
+        }))
+        .sort((a, b) => b.score - a.score)
+
+    // Pick best non-flight comfort route
     let comfortRoute = comfort[0]
-    for (const r of comfort) {
-        if (modeSig(r) !== recommendedSig &&
-            modeSig(r) !== cheapestSig) {
-            comfortRoute = r
-            break
+
+    if (comfortCandidates.length > 0) {
+        // Find the comfort-TOPSIS ranked route that matches our best non-flight
+        const bestNonFlight = comfortCandidates[0].route
+        // Find this route in comfort rankings
+        const found = comfort.find(r =>
+            r.route.id === bestNonFlight.id ||
+            (r.route.totalCost === bestNonFlight.totalCost &&
+                r.route.totalTime === bestNonFlight.totalTime)
+        )
+        if (found) comfortRoute = found
+        else {
+            // Wrap the candidate route directly
+            comfortRoute = {
+                route: bestNonFlight,
+                ccFinal: 0.9,
+                cc1: 0.9, cc2: 0.9, cc3: 0.9,
+                id: bestNonFlight.id,
+            }
         }
     }
     const comfortSig = modeSig(comfortRoute)
-
-    // RULE 4: Fastest = fastest route by TIME
-    // Must be different mode from Comfortable
-    // Sort by actual time to ensure genuinely fastest appears
-    const fastestByTime = [...fastest].sort(
-        (a, b) => a.route.totalTime - b.route.totalTime
-    )
-    let fastestRoute = fastestByTime[0]
-    for (const r of fastestByTime) {
-        const sig = modeSig(r)
-        if (sig !== comfortSig) {
-            fastestRoute = r
-            break
-        }
-    }
 
     const personaLabels = {
         balanced: 'Recommended',
@@ -544,7 +574,7 @@ export function getTopRoutePerPersona(candidates) {
         balanced: makeResult(recommendedRoute, 'balanced'),
         cheapest: makeResult(cheapestRoute, 'cheapest'),
         comfort: makeResult(comfortRoute, 'comfort'),
-        fastest: makeResult(fastestRoute, 'fastest'),
+        fastest: makeResult(fastestWrapped, 'fastest'),
     }
 }
 
