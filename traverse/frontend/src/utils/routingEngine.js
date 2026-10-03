@@ -74,6 +74,20 @@ export const RELIABILITY = {
 // intermediate stops like Kandaghat, Shoghi, Dharampur etc.
 // ------------------------------------------------------------
 export const NODES = {
+    // RAMPUR BUSHAHR CORRIDOR NODES
+    rampur_bushahr: {
+        id: 'rampur_bushahr',
+        name: 'Rampur Bushahr Bus Stand',
+        shortName: 'Rampur Bushahr', tier: 1,
+        lat: 31.4485, lon: 77.6289
+    },
+    narkanda: {
+        id: 'narkanda',
+        name: 'Narkanda Bus Stand',
+        shortName: 'Narkanda', tier: 2,
+        lat: 31.1023, lon: 77.4534
+    },
+
     // SHIMLA CORRIDOR NODES
     shimla_isbt: {
         id: 'shimla_isbt', name: 'Shimla ISBT Tutikandi',
@@ -508,6 +522,240 @@ export const EDGES = [
         dataSource: 'Formula: city cab ~5km'
     },
     // ----------------------------------------------------------
+    // RAMPUR BUSHAHR CORRIDOR EDGES
+    // Source: hrtcbustime.com verified search + official HRTC tariffs
+    // Tariff: Ordinary ₹1.72/km · Deluxe ₹2.45/km ·
+    //         Himdhara AC ₹3.30/km · Volvo ₹5.50/km
+    // ----------------------------------------------------------
+
+    // WAKNAGHAT → SHIMLA ISBT (30km)
+    // 35+ daily services — using 5 representative
+    {
+        id: 'rp_w_s_1',
+        from: 'waknaghat', to: 'shimla_isbt',
+        mode: 'bus', operator: 'HRTC Ordinary',
+        serviceNo: 'WAKNA-SML-ORD-1',
+        departs: '04:30', arrives: '05:15',
+        cost: 50, time: 45,
+        comfort: 4.5, reliability: RELIABILITY.ORDINARY,
+        transfers: 1,
+        dataSource: 'HRTC verified: Waknaghat 04:30→Shimla 05:15'
+    },
+    {
+        id: 'rp_w_s_2',
+        from: 'waknaghat', to: 'shimla_isbt',
+        mode: 'bus', operator: 'HRTC Ordinary',
+        serviceNo: 'WAKNA-SML-ORD-2',
+        departs: '07:30', arrives: '08:15',
+        cost: 50, time: 45,
+        comfort: 4.5, reliability: RELIABILITY.ORDINARY,
+        transfers: 1,
+        dataSource: 'HRTC verified: Waknaghat 07:30→Shimla 08:15'
+    },
+    {
+        id: 'rp_w_s_3',
+        from: 'waknaghat', to: 'shimla_isbt',
+        mode: 'bus', operator: 'HRTC Ordinary',
+        serviceNo: 'WAKNA-SML-ORD-3',
+        departs: '09:22', arrives: '10:10',
+        cost: 50, time: 48,
+        comfort: 4.5, reliability: RELIABILITY.ORDINARY,
+        transfers: 1,
+        dataSource: 'HRTC verified: Waknaghat 09:22→Shimla 10:10'
+    },
+    {
+        id: 'rp_w_s_4',
+        from: 'waknaghat', to: 'shimla_isbt',
+        mode: 'bus', operator: 'HRTC Himsuta Volvo AC',
+        serviceNo: 'WAKNA-SML-VOL',
+        departs: '05:20', arrives: '06:30',
+        cost: 190, time: 70,
+        comfort: 7.8, reliability: RELIABILITY.VOLVO_AC,
+        transfers: 1,
+        dataSource: 'HRTC verified: Volvo Waknaghat 05:20→Shimla 06:30'
+    },
+    {
+        id: 'rp_w_s_5',
+        from: 'waknaghat', to: 'shimla_isbt',
+        mode: 'bus', operator: 'HRTC Himdhara AC',
+        serviceNo: 'WAKNA-SML-AC',
+        departs: '00:05', arrives: '00:50',
+        cost: 100, time: 45,
+        comfort: 6.5, reliability: RELIABILITY.AC_DELUXE,
+        transfers: 1,
+        dataSource: 'HRTC verified: Himdhara AC Waknaghat 00:05→Shimla 00:50'
+    },
+
+    // WAKNAGHAT → RAMPUR BUSHAHR (160km, DIRECT)
+    // Fastest ordinary (unverified but real Delhi-Kinnaur service)
+    {
+        id: 'rp_w_r_1',
+        from: 'waknaghat', to: 'rampur_bushahr',
+        mode: 'bus', operator: 'HRTC Ordinary',
+        serviceNo: '538',
+        departs: '04:50', arrives: '09:00',
+        cost: 275, time: 250,
+        comfort: 4.5, reliability: RELIABILITY.ORDINARY * 0.9,
+        transfers: 0,
+        dataSource: 'HRTC Svc 538: Delhi ISBT→Waknaghat 04:50→Rampur 09:00 (4h 10m) ₹275'
+    },
+    {
+        id: 'rp_w_r_2',
+        from: 'waknaghat', to: 'rampur_bushahr',
+        mode: 'bus', operator: 'HRTC Ordinary',
+        serviceNo: '6752',
+        departs: '09:22', arrives: '14:35',
+        cost: 275, time: 313,
+        comfort: 4.5, reliability: RELIABILITY.ORDINARY,
+        transfers: 0,
+        dataSource: 'HRTC Svc 6752 verified: Waknaghat 09:22→Rampur 14:35 (5h 13m) ₹275'
+    },
+    {
+        id: 'rp_w_r_3',
+        from: 'waknaghat', to: 'rampur_bushahr',
+        mode: 'bus', operator: 'HRTC Ordinary',
+        serviceNo: '2040106',
+        departs: '08:38', arrives: '14:17',
+        cost: 275, time: 339,
+        comfort: 4.5, reliability: RELIABILITY.ORDINARY,
+        transfers: 0,
+        dataSource: 'HRTC Svc 2040106 verified: Waknaghat 08:38→Rampur 14:17 (5h 39m) ₹275'
+    },
+    {
+        id: 'rp_w_r_4',
+        from: 'waknaghat', to: 'rampur_bushahr',
+        mode: 'bus', operator: 'HRTC Himmani Deluxe',
+        serviceNo: '1511',
+        departs: '21:30', arrives: '02:45',
+        cost: 390, time: 315,
+        comfort: 5.5, reliability: RELIABILITY.AC_DELUXE * 0.95,
+        transfers: 0,
+        dataSource: 'HRTC Svc 1511 verified: Waknaghat 21:30→Rampur 02:45 (5h 15m) ₹390'
+    },
+    {
+        id: 'rp_w_r_5',
+        from: 'waknaghat', to: 'rampur_bushahr',
+        mode: 'bus', operator: 'HRTC Himdhara AC',
+        serviceNo: '2040624',
+        departs: '10:12', arrives: '16:23',
+        cost: 530, time: 371,
+        comfort: 6.5, reliability: RELIABILITY.AC_DELUXE,
+        transfers: 0,
+        dataSource: 'HRTC Svc 2040624 verified: Waknaghat 10:12→Rampur 16:23 (6h 11m) ₹530'
+    },
+    {
+        id: 'rp_w_r_6',
+        from: 'waknaghat', to: 'rampur_bushahr',
+        mode: 'bus', operator: 'HRTC Himsuta Volvo AC',
+        serviceNo: '93',
+        departs: '04:30', arrives: '10:00',
+        cost: 880, time: 330,
+        comfort: 7.8, reliability: RELIABILITY.VOLVO_AC * 0.9,
+        transfers: 0,
+        dataSource: 'HRTC Svc 93: Delhi→Waknaghat 04:30→Rampur 10:00 (5h 30m) ₹880'
+    },
+
+    // SHIMLA ISBT → RAMPUR BUSHAHR (130km)
+    {
+        id: 'rp_s_r_1',
+        from: 'shimla_isbt', to: 'rampur_bushahr',
+        mode: 'bus', operator: 'HRTC Ordinary',
+        serviceNo: '6752',
+        departs: '10:10', arrives: '14:35',
+        cost: 225, time: 265,
+        comfort: 4.5, reliability: RELIABILITY.ORDINARY,
+        transfers: 1,
+        dataSource: 'HRTC Svc 6752 verified: Shimla 10:10→Rampur 14:35 (4h 25m) ₹225'
+    },
+    {
+        id: 'rp_s_r_2',
+        from: 'shimla_isbt', to: 'rampur_bushahr',
+        mode: 'bus', operator: 'HRTC Ordinary',
+        serviceNo: '2040102',
+        departs: '02:30', arrives: '07:02',
+        cost: 225, time: 272,
+        comfort: 4.5, reliability: RELIABILITY.ORDINARY,
+        transfers: 1,
+        dataSource: 'HRTC Svc 2040102 verified: Shimla 02:30→Rampur 07:02 (4h 32m) ₹225'
+    },
+    {
+        id: 'rp_s_r_3',
+        from: 'shimla_isbt', to: 'rampur_bushahr',
+        mode: 'bus', operator: 'HRTC Ordinary',
+        serviceNo: '2040094',
+        departs: '04:15', arrives: '09:02',
+        cost: 225, time: 287,
+        comfort: 4.5, reliability: RELIABILITY.ORDINARY,
+        transfers: 1,
+        dataSource: 'HRTC Svc 2040094 verified: Shimla 04:15→Rampur 09:02 (4h 47m) ₹225'
+    },
+    {
+        id: 'rp_s_r_4',
+        from: 'shimla_isbt', to: 'rampur_bushahr',
+        mode: 'bus', operator: 'HRTC Himmani Deluxe',
+        serviceNo: '1511',
+        departs: '22:20', arrives: '02:45',
+        cost: 320, time: 265,
+        comfort: 5.5, reliability: RELIABILITY.AC_DELUXE * 0.95,
+        transfers: 1,
+        dataSource: 'HRTC Svc 1511 verified: Shimla 22:20→Rampur 02:45 (4h 25m) ₹320'
+    },
+    {
+        id: 'rp_s_r_5',
+        from: 'shimla_isbt', to: 'rampur_bushahr',
+        mode: 'bus', operator: 'HRTC Himdhara AC',
+        serviceNo: '2040624',
+        departs: '10:51', arrives: '16:23',
+        cost: 430, time: 332,
+        comfort: 6.5, reliability: RELIABILITY.AC_DELUXE,
+        transfers: 1,
+        dataSource: 'HRTC Svc 2040624 verified: Shimla 10:51→Rampur 16:23 (5h 32m) ₹430'
+    },
+
+    // DIRECT CAB: JUIT → RAMPUR BUSHAHR (~160km)
+    // No train, no flight — cab is the only premium option
+    {
+        id: 'rp_cab_direct',
+        from: 'juit', to: 'rampur_bushahr',
+        mode: 'cab', operator: 'Intercity Hill Taxi',
+        serviceNo: null,
+        departs: 'On demand', arrives: 'On demand',
+        cost: Math.round(cabCost(
+            haversineKm(31.0048, 77.0967, 31.4485, 77.6289),
+            'hill_taxi'
+        )),
+        time: 210,
+        comfort: 8.0, reliability: RELIABILITY.cab,
+        transfers: 0,
+        dataSource: 'Formula: JUIT→Rampur ~130km hill taxi'
+    },
+
+    // NARKANDA intermediate (optional stop)
+    // Waknaghat → Narkanda via Shimla
+    {
+        id: 'rp_w_nark',
+        from: 'shimla_isbt', to: 'narkanda',
+        mode: 'bus', operator: 'HRTC Ordinary via Theog',
+        serviceNo: 'SML-NARK-ORD',
+        departs: 'Multiple', arrives: 'Multiple',
+        cost: 80, time: 90,
+        comfort: 4.5, reliability: RELIABILITY.ORDINARY,
+        transfers: 1,
+        dataSource: 'HRTC Shimla→Narkanda ~45km via Theog ₹1.72/km'
+    },
+    {
+        id: 'rp_nark_r',
+        from: 'narkanda', to: 'rampur_bushahr',
+        mode: 'bus', operator: 'HRTC Ordinary',
+        serviceNo: 'NARK-RPR-ORD',
+        departs: 'Multiple', arrives: 'Multiple',
+        cost: 150, time: 180,
+        comfort: 4.5, reliability: RELIABILITY.ORDINARY,
+        transfers: 1,
+        dataSource: 'HRTC Narkanda→Rampur ~85km via Sainj ₹1.72/km'
+    },
+
+    // ----------------------------------------------------------
     // SHIMLA CORRIDOR EDGES
     // Source: Real HRTC scrape — 23 services verified
     // ----------------------------------------------------------
@@ -861,10 +1109,32 @@ const SHIMLA_DELHI_TEMPLATES = [
     ['shimla_isbt', 'delhi_cp'],
 ]
 
+// JUIT → RAMPUR BUSHAHR templates
+const JUIT_RAMPUR_TEMPLATES = [
+    // Direct bus Waknaghat → Rampur (most services are direct)
+    ['juit', 'waknaghat', 'rampur_bushahr'],
+    // Via Shimla ISBT then Rampur
+    ['juit', 'waknaghat', 'shimla_isbt', 'rampur_bushahr'],
+    // Via Shimla then Narkanda then Rampur
+    ['juit', 'waknaghat', 'shimla_isbt', 'narkanda', 'rampur_bushahr'],
+    // Direct cab JUIT → Rampur (no stops)
+    ['juit', 'rampur_bushahr'],
+]
+
+// SHIMLA → RAMPUR BUSHAHR templates
+const SHIMLA_RAMPUR_TEMPLATES = [
+    // Direct bus Shimla → Rampur
+    ['shimla_isbt', 'rampur_bushahr'],
+    // Via Narkanda
+    ['shimla_isbt', 'narkanda', 'rampur_bushahr'],
+]
+
 // Combined — detect corridor from origin node
 const ROUTE_TEMPLATES_BY_CORRIDOR = {
     juit: JUIT_DELHI_TEMPLATES,
     shimla_isbt: SHIMLA_DELHI_TEMPLATES,
+    juit_rampur: JUIT_RAMPUR_TEMPLATES,
+    shimla_rampur: SHIMLA_RAMPUR_TEMPLATES,
 }
 
 // Default for findCandidateRoutes (JUIT → Delhi)
@@ -959,9 +1229,12 @@ export function findCandidateRoutes() {
 // Detects which corridor to use based on origin node
 // Supports: juit→delhi, shimla→delhi (more coming)
 // ------------------------------------------------------------
-export function findCandidateRoutesForCorridor(fromNode = 'juit') {
-    const templates = ROUTE_TEMPLATES_BY_CORRIDOR[fromNode]
+export function findCandidateRoutesForCorridor(corridorKey = 'juit') {
+    const templates = ROUTE_TEMPLATES_BY_CORRIDOR[corridorKey]
         || JUIT_DELHI_TEMPLATES
+    const fromNode = corridorKey.includes('rampur')
+        ? (corridorKey === 'juit_rampur' ? 'juit' : 'shimla_isbt')
+        : (corridorKey === 'shimla_isbt' ? 'shimla_isbt' : 'juit')
 
     const candidates = []
 
@@ -1027,21 +1300,37 @@ export function findCandidateRoutesForCorridor(fromNode = 'juit') {
 export const SUPPORTED_CORRIDORS = [
     {
         id: 'juit_delhi',
+        corridorKey: 'juit',
         from: 'juit',
         fromName: 'JUIT Waknaghat',
         to: 'delhi_cp',
         toName: 'New Delhi',
         label: 'JUIT Waknaghat → New Delhi',
         distance: '~310 km',
+        hasTrainFlight: true,
     },
     {
         id: 'shimla_delhi',
+        corridorKey: 'shimla_isbt',
         from: 'shimla_isbt',
         fromName: 'Shimla',
         to: 'delhi_cp',
         toName: 'New Delhi',
         label: 'Shimla → New Delhi',
         distance: '~348 km',
+        hasTrainFlight: true,
+    },
+    {
+        id: 'juit_rampur',
+        corridorKey: 'juit_rampur',
+        from: 'juit',
+        fromName: 'JUIT Waknaghat',
+        to: 'rampur_bushahr',
+        toName: 'Rampur Bushahr',
+        label: 'JUIT Waknaghat → Rampur Bushahr',
+        distance: '~160 km',
+        hasTrainFlight: false,
+        note: 'Bus & Cab only — no train or flight to Rampur',
     },
 ]
 

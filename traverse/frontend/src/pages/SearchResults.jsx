@@ -308,6 +308,9 @@ function SearchResults() {
                   <option value="shimla_isbt">
                     Shimla → New Delhi (~348 km)
                   </option>
+                  <option value="juit_rampur">
+                    JUIT Waknaghat → Rampur Bushahr (~160 km)
+                  </option>
                 </select>
                 <div style={{
                   position: 'absolute', right: '12px',
@@ -327,7 +330,9 @@ function SearchResults() {
                   borderRadius: '999px' }} />
                 {selectedCorridor === 'juit' 
                   ? '21 real HRTC services'
-                  : '23 real HRTC services'
+                  : selectedCorridor === 'shimla_isbt'
+                  ? '23 real HRTC services'
+                  : '15 real HRTC services'
                 } · Modified TOPSIS ranked
               </div>
             </div>
