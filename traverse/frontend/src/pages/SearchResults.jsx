@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
     MapPin, Calendar, Clock, Edit,
@@ -16,6 +16,42 @@ function SearchResults() {
     const navigate = useNavigate()
 
     const [selectedCorridor, setSelectedCorridor] = useState('juit')
+
+    const [isComputing, setIsComputing] = useState(false)
+    const [computingStep, setComputingStep] = useState(0)
+    const prevCorridor = useRef(selectedCorridor)
+
+    const computingSteps = [
+      'Loading HRTC timetable data...',
+      'Building route graph...',
+      'Generating candidate routes...',
+      'Computing entropy weights...',
+      'Applying persona boosts...',
+      'Running Modified TOPSIS...',
+      'Ranking with SM1 · SM2 · SM3...',
+      'Routes ranked. Showing top 4.',
+    ]
+
+    useEffect(() => {
+      if (prevCorridor.current === selectedCorridor) 
+        return
+      prevCorridor.current = selectedCorridor
+      
+      setIsComputing(true)
+      setComputingStep(0)
+      
+      let step = 0
+      const interval = setInterval(() => {
+        step++
+        setComputingStep(step)
+        if (step >= computingSteps.length - 1) {
+          clearInterval(interval)
+          setTimeout(() => setIsComputing(false), 600)
+        }
+      }, 180)
+      
+      return () => clearInterval(interval)
+    }, [selectedCorridor])
 
     const candidates = findCandidateRoutesForCorridor(selectedCorridor)
     const allTopRoutes = getTopRoutePerPersona(candidates)
@@ -272,6 +308,10 @@ function SearchResults() {
                 @keyframes pulse {
                     0%, 100% { opacity: 1; }
                     50% { opacity: 0.3; }
+                }
+                @keyframes spin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
                 }
             `}</style>
 
@@ -732,10 +772,71 @@ function SearchResults() {
                     </div>
 
                     {/* Journey Cards */}
-                    <div style={{
-                        display: 'flex', flexDirection: 'column',
-                        gap: '20px'
-                    }}>
+                    <div style={{ position: 'relative' }}>
+                        {isComputing && (
+                            <div style={{
+                                position: 'absolute',
+                                inset: 0,
+                                backgroundColor: 'rgba(255,255,255,0.92)',
+                                zIndex: 100,
+                                borderRadius: '16px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '20px',
+                                backdropFilter: 'blur(4px)',
+                            }}>
+                                <div style={{
+                                    width: '48px', height: '48px',
+                                    border: '4px solid #E2E8F0',
+                                    borderTop: '4px solid #1A56DB',
+                                    borderRadius: '50%',
+                                    animation: 'spin 0.8s linear infinite',
+                                }} />
+                                
+                                <div style={{ textAlign: 'center' }}>
+                                    <div style={{
+                                        fontSize: '15px',
+                                        fontWeight: '800',
+                                        color: '#0F172A',
+                                        marginBottom: '6px',
+                                    }}>
+                                        Modified TOPSIS Running
+                                    </div>
+                                    <div style={{
+                                        fontSize: '13px',
+                                        color: '#1A56DB',
+                                        fontWeight: '600',
+                                        minHeight: '20px',
+                                    }}>
+                                        {computingSteps[computingStep]}
+                                    </div>
+                                </div>
+
+                                <div style={{
+                                    display: 'flex',
+                                    gap: '6px',
+                                    alignItems: 'center',
+                                }}>
+                                    {computingSteps.map((_, i) => (
+                                        <div key={i} style={{
+                                            width: i === computingStep ? '20px' : '6px',
+                                            height: '6px',
+                                            borderRadius: '999px',
+                                            backgroundColor: i <= computingStep 
+                                                ? '#1A56DB' : '#E2E8F0',
+                                            transition: 'all 0.2s ease',
+                                        }} />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        <div style={{
+                            display: 'flex', flexDirection: 'column',
+                            gap: '20px'
+                        }}>
                         <div style={{
                             backgroundColor: '#0F172A',
                             borderRadius: '16px',
@@ -1247,6 +1348,7 @@ function SearchResults() {
                                 </div>
                             </article>
                         ))}
+                        </div>
                     </div>
 
                     {/* Pagination */}
