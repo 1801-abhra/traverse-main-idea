@@ -468,14 +468,38 @@ Example: JUIT → Chandigarh Airport (haversine 81.2 km)
                     }}>
                         <FormulaBox
                             title="Route Template (path structure)"
-                            formula={`Example template:
+                            formula={corridorKey === 'shimla_isbt' ? 
+`Example template:
+[shimla_isbt → delhi_isbt → delhi_cp]
+
+For each leg, ALL available services are options:
+Leg 1: 8 HRTC services (Svc 6752, 1511, 954, 333...)
+Leg 2: 3 options (Metro Yellow Line, Cab, Auto)
+= 8×3 = 24 candidates from ONE template
+Total across ALL 6 templates = 50 candidates`
+
+: corridorKey === 'juit_rampur' ?
+`Example template:
+[juit → waknaghat → rampur_bushahr]
+
+For each leg, ALL available services are options:
+Leg 1: 3 options (Cab, Hill Taxi, Walk)
+Leg 2: 6 HRTC services (Svc 538, 6752, 1511, 
+       2040624, 93, 2040106)
+= 3×6 = 18 candidates from ONE template
+Total across ALL 4 templates = 73 candidates`
+
+:
+`Example template:
 [juit → waknaghat → delhi_isbt → delhi_cp]
 
 For each leg, ALL available services are options:
 Leg 1: 3 options (Cab, Hill Taxi, Walk)
 Leg 2: 5 HRTC services (Svc 518, 556, 8, 20, 591)
 Leg 3: 3 options (Metro, Cab, Auto)
-= 3×5×3 = 45 candidates from ONE template`}
+= 3×5×3 = 45 candidates from ONE template
+Total across ALL 5 templates = 35 candidates`
+}
                             note="Cartesian product of all options per leg. Ensures every possible combination is evaluated."
                         />
                         <div style={{
