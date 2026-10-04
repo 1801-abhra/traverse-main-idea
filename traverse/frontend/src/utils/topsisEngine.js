@@ -288,17 +288,29 @@ export function findIdealSolutions(weightedMatrix) {
 // Adapted from paper equations (1), (2), (3)
 // Applied to crisp transport criteria vectors
 //
-// SM1: Cosine dot-product similarity (Eq. 1)
-// S1(A, B) = (A·B) / (|A| × |B|)
+// SM1: Arithmetic Mean Based similarity — paper Eq. 1
+//   "Cosine-Cotangent Similarity Measure on TSFHSS"
+//   Adapted for crisp: S1(A,B) = (A·B) / (|A| × |B|)
+//   Arithmetic mean refers to 1/(mn') averaging factor
 //
-// SM2: Cosine of scaled difference (Eq. 2, denominator 1)
-// S2(A, B) = (1/n) × Σ cos(π/2 × |ai - bi|)
+// SM2: Cosine based × π/2 — paper Eq. 2
+//   S2(A,B) = (1/n) × Σ cos(π/2 × |aᵢ-bᵢ|)
+//   Strict — penalizes differences heavily
 //
-// SM3: Cosine of scaled difference (Eq. 3, denominator 3)
-// S3(A, B) = (1/n) × Σ cos(π/2 × |ai - bi| / 3)
+// SM3: Cosine based × π/6 — paper Eq. 3
+//   S3(A,B) = (1/n) × Σ cos(π/6 × |aᵢ-bᵢ|)
+//   Lenient — tolerates moderate differences
+//   π/6 = π/2 ÷ 3 = π/3 ÷ 2 (equivalent denominator forms)
 // ------------------------------------------------------------
 
-// SM1 — Cosine dot product (from paper Eq. 1)
+// SM1 — Arithmetic Mean Based Similarity (from paper Eq. 1)
+// Paper name: "Cosine-Cotangent Similarity Measure on TSFHSS"
+// Formula: S₁(U,V) = Σ(aᵢ·bᵢ) / (√Σaᵢ² × √Σbᵢ²)
+// In TSFHSS paper this uses fuzzy triplets (ρ,v,η)
+// Adapted for crisp transport criteria: normalized dot product
+// The "arithmetic mean" in paper name refers to the 1/(mn')
+// averaging factor across all elements and attributes
+// The similarity measure itself is dot product normalized by magnitudes
 function sm1(vecA, vecB) {
     const dot = vecA.reduce((s, a, i) => s + a * vecB[i], 0)
     const magA = Math.sqrt(vecA.reduce((s, a) => s + a * a, 0))
@@ -317,12 +329,19 @@ function sm2(vecA, vecB) {
     return Math.max(0, Math.min(1, sum / n))
 }
 
-// SM3 — Cosine based with denominator 3 (from paper Eq. 3)
+// SM3 — Cosine based, multiplied by π/6 — paper Eq. 3
+// S₃(U,V) = 1/(mn') × Σ cos(π/6 × |diff|)
+// Equivalent forms all give same result:
+//   cos(π/2 × |diff| / 3)
+//   cos(π/3 × |diff| / 2)  ← paper denominator structure
+//   cos(π/6 × |diff|)      ← simplified form used here
+// π/6 is more lenient than SM2's π/2
+// Tolerates larger differences → robustness measure
 function sm3(vecA, vecB) {
     const n = vecA.length
     const sum = vecA.reduce((s, a, i) => {
         const diff = Math.abs(a - vecB[i])
-        return s + Math.cos((Math.PI / 2) * (diff / 3))
+        return s + Math.cos((Math.PI / 6) * diff)
     }, 0)
     return Math.max(0, Math.min(1, sum / n))
 }
