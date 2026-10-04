@@ -133,9 +133,13 @@ function SearchResults() {
                 || (selectedCorridor === 'juit_rampur' ? 'Rampur Bushahr' : 'New Delhi'),
             destSub: (() => {
                 const stops = computedRoutes.balanced?.stopNames || []
+                const dest = stops[stops.length - 1] || ''
                 const secondLast = stops[stops.length - 2] || ''
-                const first = stops[0] || ''
-                return secondLast === first ? '' : secondLast
+                const origin = stops[0] || ''
+                if (secondLast === origin) return ''
+                if (secondLast === dest) return ''
+                if (stops.length <= 3) return ''
+                return secondLast
             })(),
         },
         {
@@ -187,9 +191,13 @@ function SearchResults() {
                 || (selectedCorridor === 'juit_rampur' ? 'Rampur Bushahr' : 'New Delhi'),
             destSub: (() => {
                 const stops = computedRoutes.cheapest?.stopNames || []
+                const dest = stops[stops.length - 1] || ''
                 const secondLast = stops[stops.length - 2] || ''
-                const first = stops[0] || ''
-                return secondLast === first ? '' : secondLast
+                const origin = stops[0] || ''
+                if (secondLast === origin) return ''
+                if (secondLast === dest) return ''
+                if (stops.length <= 3) return ''
+                return secondLast
             })(),
         },
         {
@@ -242,9 +250,13 @@ function SearchResults() {
                 || (selectedCorridor === 'juit_rampur' ? 'Rampur Bushahr' : 'New Delhi'),
             destSub: (() => {
                 const stops = computedRoutes.comfort?.stopNames || []
+                const dest = stops[stops.length - 1] || ''
                 const secondLast = stops[stops.length - 2] || ''
-                const first = stops[0] || ''
-                return secondLast === first ? '' : secondLast
+                const origin = stops[0] || ''
+                if (secondLast === origin) return ''
+                if (secondLast === dest) return ''
+                if (stops.length <= 3) return ''
+                return secondLast
             })(),
         },
         {
@@ -300,9 +312,13 @@ function SearchResults() {
                 || (selectedCorridor === 'juit_rampur' ? 'Rampur Bushahr' : 'New Delhi'),
             destSub: (() => {
                 const stops = computedRoutes.fastest?.stopNames || []
+                const dest = stops[stops.length - 1] || ''
                 const secondLast = stops[stops.length - 2] || ''
-                const first = stops[0] || ''
-                return secondLast === first ? '' : secondLast
+                const origin = stops[0] || ''
+                if (secondLast === origin) return ''
+                if (secondLast === dest) return ''
+                if (stops.length <= 3) return ''
+                return secondLast
             })(),
         },
     ]
