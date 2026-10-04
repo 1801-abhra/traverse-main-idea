@@ -131,17 +131,19 @@ function SearchResults() {
             })),
             dest: computedRoutes.balanced?.stopNames?.slice(-1)[0]
                 || (selectedCorridor === 'juit_rampur' ? 'Rampur Bushahr' : 'New Delhi'),
-            destSub: computedRoutes.balanced?.stopNames?.slice(-2, -1)[0] ===
-                computedRoutes.balanced?.stopNames?.slice(-1)[0]
-                ? ''
-                : computedRoutes.balanced?.stopNames?.slice(-2, -1)[0] || '',
+            destSub: (() => {
+                const stops = computedRoutes.balanced?.stopNames || []
+                const secondLast = stops[stops.length - 2] || ''
+                const first = stops[0] || ''
+                return secondLast === first ? '' : secondLast
+            })(),
         },
         {
             id: 2,
-            badge: 'Cheapest',
+            badge: 'Economical',
             badgeColor: '#059669',
             badgeBg: '#ECFDF5',
-            tag: 'Save Most',
+            tag: 'Best Value',
             tagColor: '#059669',
             tagBg: '#ECFDF5',
             savingsBadge: '💰 Save ₹' + (
@@ -183,10 +185,12 @@ function SearchResults() {
             })),
             dest: computedRoutes.cheapest?.stopNames?.slice(-1)[0]
                 || (selectedCorridor === 'juit_rampur' ? 'Rampur Bushahr' : 'New Delhi'),
-            destSub: computedRoutes.cheapest?.stopNames?.slice(-2, -1)[0] ===
-                computedRoutes.cheapest?.stopNames?.slice(-1)[0]
-                ? ''
-                : computedRoutes.cheapest?.stopNames?.slice(-2, -1)[0] || '',
+            destSub: (() => {
+                const stops = computedRoutes.cheapest?.stopNames || []
+                const secondLast = stops[stops.length - 2] || ''
+                const first = stops[0] || ''
+                return secondLast === first ? '' : secondLast
+            })(),
         },
         {
             id: 3,
@@ -236,10 +240,12 @@ function SearchResults() {
             })),
             dest: computedRoutes.comfort?.stopNames?.slice(-1)[0]
                 || (selectedCorridor === 'juit_rampur' ? 'Rampur Bushahr' : 'New Delhi'),
-            destSub: computedRoutes.comfort?.stopNames?.slice(-2, -1)[0] ===
-                computedRoutes.comfort?.stopNames?.slice(-1)[0]
-                ? ''
-                : computedRoutes.comfort?.stopNames?.slice(-2, -1)[0] || '',
+            destSub: (() => {
+                const stops = computedRoutes.comfort?.stopNames || []
+                const secondLast = stops[stops.length - 2] || ''
+                const first = stops[0] || ''
+                return secondLast === first ? '' : secondLast
+            })(),
         },
         {
             id: 4,
@@ -292,10 +298,12 @@ function SearchResults() {
             })),
             dest: computedRoutes.fastest?.stopNames?.slice(-1)[0]
                 || (selectedCorridor === 'juit_rampur' ? 'Rampur Bushahr' : 'New Delhi'),
-            destSub: computedRoutes.fastest?.stopNames?.slice(-2, -1)[0] ===
-                computedRoutes.fastest?.stopNames?.slice(-1)[0]
-                ? ''
-                : computedRoutes.fastest?.stopNames?.slice(-2, -1)[0] || '',
+            destSub: (() => {
+                const stops = computedRoutes.fastest?.stopNames || []
+                const secondLast = stops[stops.length - 2] || ''
+                const first = stops[0] || ''
+                return secondLast === first ? '' : secondLast
+            })(),
         },
     ]
 

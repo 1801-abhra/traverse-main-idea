@@ -174,7 +174,7 @@ export default function AlgorithmDemo() {
             desc: 'All criteria balanced — entropy weights pure'
         },
         {
-            key: 'cheapest', label: '💰 Cheapest', color: '#16A34A', bg: '#DCFCE7',
+            key: 'cheapest', label: '💰 Economical', color: '#16A34A', bg: '#DCFCE7',
             desc: 'Cost ×4.0 boost → 58% weight'
         },
         {
@@ -687,12 +687,12 @@ m = number of candidate routes`}
                                 formula={`boosted_wⱼ = entropy_wⱼ × persona_boostⱼ
 final_wⱼ = boosted_wⱼ / Σ boosted_wⱼ  (renormalize)
 
-CHEAPEST: cost ×4.0, time ×0.5, comfort ×0.2
+ECONOMICAL: cost ×4.0, time ×0.5, comfort ×0.2
 FASTEST:  time ×10.0, cost ×0.05, comfort ×0.2
 COMFORT:  comfort ×6.0, reliability ×3.0
 BALANCED: all ×1.0-1.5 (slight boosts)`}
                                 color="#D97706"
-                                note="No weight is ever 0%. Even cheapest persona has time=8% so faster routes win on equal cost."
+                                note="No weight is ever 0%. Even economical persona has time=8% so faster routes win on equal cost."
                             />
                         </div>
                     </div>
@@ -728,7 +728,7 @@ BALANCED: all ×1.0-1.5 (slight boosts)`}
                                     <tbody>
                                         {[
                                             { key: 'balanced', label: '⚖️ Balanced', color: '#1A56DB' },
-                                            { key: 'cheapest', label: '💰 Cheapest', color: '#16A34A' },
+                                            { key: 'cheapest', label: '💰 Economical', color: '#16A34A' },
                                             { key: 'fastest', label: '⚡ Fastest', color: '#D97706' },
                                             { key: 'comfort', label: '⭐ Comfort', color: '#7C3AED' },
                                         ].map((p, pi) => {
