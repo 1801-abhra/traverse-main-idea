@@ -1011,7 +1011,7 @@ AI Match % = CC × 100`}
                             marginBottom: '16px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)'
                         }}>
                             <SectionHead icon={CheckCircle}
-                                title={`Top Ranked Routes — ${persona.toUpperCase()} Persona`}
+                                title={`Top Ranked Routes — ${persona.toUpperCase()} · ${currentCorridor?.label || 'JUIT→Delhi'}`}
                                 badge="SM1+SM2+SM3 averaged" color="#16A34A" />
 
                             <FormulaBox
@@ -1136,7 +1136,7 @@ CCfinal = (CC1 + CC2 + CC3) / 3   →   AI Match % = CCfinal × 100`}
                                     alignItems: 'center'
                                 }}>
                                     <SectionHead icon={BarChart2}
-                                        title={`Full Weighted Decision Matrix (all ${candidates.length} routes)`}
+                                        title={`Full Weighted Decision Matrix — ${currentCorridor?.label || 'JUIT→Delhi'} (all ${candidates.length} routes)`}
                                         color="#64748B" />
                                     <button onClick={() => setShowMatrix(!showMatrix)}
                                         style={{
