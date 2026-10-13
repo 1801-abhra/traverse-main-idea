@@ -28,10 +28,62 @@ const calculateDistanceMeters = (lat1, lon1, lat2, lon2) => {
 function DriverDashboard() {
   const rideSound = React.useRef(new Audio('/notification.wav'));
   const pendingSoundRef = React.useRef(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const soundEnabledRef = React.useRef(true);
+
+  React.useEffect(() => {
+    soundEnabledRef.current = soundEnabled;
+  }, [soundEnabled]);
+
+  const toggleSound = () => {
+    // Play and immediately pause to unlock browser autoplay restriction
+    try {
+      const audio = new Audio('/notification.wav');
+      audio.volume = 0.01;
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          audio.pause();
+          audio.currentTime = 0;
+        }).catch(e => console.log('Audio unlock failed:', e));
+      }
+    } catch (e) {
+      console.log('Audio unlock error:', e);
+    }
+    setSoundEnabled(prev => !prev);
+  };
+
+  const playRideSound = () => {
+    if (!soundEnabledRef.current) return;
+    // Try file first
+    try {
+      const audio = new Audio('/notification.wav');
+      audio.volume = 1.0;
+      audio.play().catch(() => {
+        // Fallback to Web Audio API beep
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const oscillator = ctx.createOscillator();
+          const gain = ctx.createGain();
+          oscillator.connect(gain);
+          gain.connect(ctx.destination);
+          oscillator.frequency.value = 880;
+          oscillator.type = 'sine';
+          gain.gain.setValueAtTime(0.5, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1);
+          oscillator.start(ctx.currentTime);
+          oscillator.stop(ctx.currentTime + 1);
+        } catch(e) { console.log('Audio fallback failed:', e); }
+      });
+    } catch(e) { console.log('Audio error:', e); }
+    
+    // Vibration on mobile
+    if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
+  };
 
   const tryPlaySound = () => {
     if (pendingSoundRef.current) {
-      rideSound.current.play().catch(e => console.log(e));
+      playRideSound();
       pendingSoundRef.current = false;
     }
   };
@@ -223,9 +275,7 @@ function DriverDashboard() {
             return [ride, ...prev];
           });
         }
-        rideSound.current.play().catch(() => {
-          pendingSoundRef.current = true;
-        });
+        playRideSound();
       }
     });
     socket.on('ride:passenger-joined', ({ message, ride }) => {
@@ -635,6 +685,22 @@ const preAcceptRide = async (rideId) => {
             <span style={{ opacity: 0.8 }}>🚗</span>
             <span style={{ fontWeight: '600', color: '#eee', maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name}</span>
           </span>
+
+          {/* Audio Unlock & Notification Toggle */}
+          <button
+            onClick={toggleSound}
+            className="nav-btn-hover nav-btn-mobile"
+            style={{
+              ...styles.navBtn,
+              background: soundEnabled ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+              borderColor: soundEnabled ? 'rgba(16, 185, 129, 0.4)' : 'rgba(255, 255, 255, 0.1)',
+              color: soundEnabled ? '#10b981' : '#888888'
+            }}
+            title={soundEnabled ? 'Sound alert enabled (Click to test/toggle)' : 'Sound alert muted (Click to enable)'}
+          >
+            <span>{soundEnabled ? '🔔' : '🔕'}</span>
+            <span className="nav-text-desktop">{soundEnabled ? ' Sound' : ' Muted'}</span>
+          </button>
 
           <button
             onClick={toggleAvailability}

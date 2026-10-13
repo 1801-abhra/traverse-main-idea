@@ -30,31 +30,30 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
+// Sound in notification options is supported on Android Chrome.
+// Note: iOS has limitations with web push sound.
 messaging.onBackgroundMessage((payload) => {
-    const title = payload.data?.title || 'Traverse';
-    const body = payload.data?.body || 'You have a new update';
+    const title = payload.data?.title || payload.notification?.title || 'Traverse';
+    const body = payload.data?.body || payload.notification?.body || 'New ride request available!';
     self.registration.showNotification(title, {
-        body,
-        icon: '/logo192.png'
+        body: body,
+        icon: '/traverse-logo.jpeg',
+        badge: '/traverse-logo.jpeg',
+        sound: '/notification.wav',
+        vibrate: [300, 100, 300, 100, 300],
+        requireInteraction: true,
+        tag: 'new-ride',
+        renotify: true,
+        actions: [
+            { action: 'accept', title: '✅ Open App' },
+            { action: 'dismiss', title: '❌ Dismiss' }
+        ]
     });
 });
 
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
-    const url = event.notification.data?.url || '/driver';
     event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true })
-            .then(clientList => {
-                for (const client of clientList) {
-                    if (client.url.includes('traverse-unicab') && 'focus' in client) {
-                        client.focus();
-                        client.navigate(url);
-                        return;
-                    }
-                }
-                if (clients.openWindow) {
-                    return clients.openWindow('https://traverse-unicab.vercel.app' + url);
-                }
-            })
+        clients.openWindow('/')
     );
 });
